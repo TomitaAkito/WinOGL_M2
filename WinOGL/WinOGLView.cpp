@@ -44,8 +44,7 @@ CWinOGLView::~CWinOGLView()
 
 BOOL CWinOGLView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: この位置で CREATESTRUCT cs を修正して Window クラスまたはスタイルを
-	//  修正してください。
+
 
 	return CView::PreCreateWindow(cs);
 }
