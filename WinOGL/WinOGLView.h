@@ -4,6 +4,7 @@
 
 #pragma once
 #include <gl/GL.h>
+#include "CAdminControl.h"
 
 
 class CWinOGLView : public CView
@@ -41,12 +42,32 @@ protected:
 public:
 //	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+
+#pragma region 変数
 private:
 	HGLRC m_hRC;
+	CAdminControl AC;
+	float x_Ldown;
+	float y_Ldown;
+
+#pragma endregion
+
+#pragma region 関数
 public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+
+	/// <summary>
+	/// ビューイング変換を施してx(y)_Ldown関数へ格納する
+	/// </summary>
+	/// <param name="x">デバイス座標系：マウスx座標</param>
+	/// <param name="y">デバイス座標系：マウスy座標</param>
+	/// <param name="rect">ウインドウ情報</param>
+	void viewingTransformation(float x,float y,CRect rect);
+
+#pragma endregion
 };
 
 #ifndef _DEBUG  // WinOGLView.cpp のデバッグ バージョン

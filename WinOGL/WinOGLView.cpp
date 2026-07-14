@@ -28,6 +28,7 @@ ON_WM_LBUTTONDOWN()
 ON_WM_CREATE()
 ON_WM_DESTROY()
 ON_WM_ERASEBKGND()
+ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -54,20 +55,14 @@ BOOL CWinOGLView::PreCreateWindow(CREATESTRUCT& cs)
 void CWinOGLView::OnDraw(CDC* pDC) {
 	CWinOGLDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	if(!pDoc)
+	if (!pDoc)
 		return;
 
 	wglMakeCurrent(pDC->m_hDC, m_hRC);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT /* | GL_DEPTH_BUFFER_BIT*/);
 
-	glColor3f(1.0, 1.0, 1.0); // 色を設定
-	glBegin(GL_LINE_STRIP); // 描画の開始
-	glVertex2f(-1.0, 0.5); // 1点目の座標
-	glVertex2f(0.0, -0.5); // 2点目の座標
-	glVertex2f(1.0, 0.5); // 3点目の座標
-	glVertex2f(-1.0, 0.5); // 4点目の座標(始点に戻る)
-	glEnd(); // 描画の終了
+	AC.Draw();
 
 	glFlush();
 	SwapBuffers(pDC->m_hDC);
@@ -105,8 +100,13 @@ CWinOGLDoc* CWinOGLView::GetDocument() const // デバッグ以外のバージ�
 //}
 
 void CWinOGLView::OnLButtonDown(UINT nFlags, CPoint point) {
-	// TODO: ここにメッセージ ハンドラー コードを追加するか、既定の処理を呼び出します。
+	// 描画領域の大きさを取得
+	CRect rect;
+	GetClientRect(rect);
+	
+	viewingTransformation(point.x, point.y, rect);
 
+	RedrawWindow();
 	CView::OnLButtonDown(nFlags, point);
 }
 
@@ -148,3 +148,52 @@ void CWinOGLView::OnDestroy() {
 BOOL CWinOGLView::OnEraseBkgnd(CDC* pDC) {
 	return true;
 }
+void CWinOGLView::OnSize(UINT nType, int cx, int cy)
+{
+	CView::OnSize(nType, cx, cy);
+
+	CClientDC clientDC(this);
+	wglMakeCurrent(clientDC.m_hDC, m_hRC);
+	glViewport(0, 0, cx, cy);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	float aspect;
+	if (cx > cy) {
+		aspect = static_cast<double>(cx) / static_cast<double>(cy);
+		glOrtho(-aspect, aspect, -1.0, 1.0, -100.0, 100.0);
+	}
+	else {
+		aspect = static_cast<double>(cy) / static_cast<double>(cx);
+		glOrtho(-1.0, 1.0, -aspect, aspect, -100.0, 100.0);
+	}
+
+
+	glMatrixMode(GL_MODELVIEW);
+	RedrawWindow();
+	wglMakeCurrent(clientDC.m_hDC, NULL);
+}
+
+void CWinOGLView::viewingTransformation(float x, float y, CRect rect) {
+	// デバイス座標系->正規化座標系
+	x = x / rect.Width();
+	y = y / rect.Height();
+
+	// 正規化座標系->ワールド座標系
+	x *= 2;
+	y *= 2;
+	x -= 1.0;
+	y -= 1.0;
+	y *= -1.0;
+
+	x_Ldown = x;
+	y_Ldown = y;
+
+	if (rect.Width() > rect.Height()) {
+		x_Ldown *= static_cast<float>(rect.Width()) / static_cast<float>(rect.Height());
+	}
+	else {
+		y_Ldown *= static_cast<float>(rect.Height()) / static_cast<float>(rect.Width());
+	}
+}
+
