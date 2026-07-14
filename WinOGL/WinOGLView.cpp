@@ -106,6 +106,8 @@ void CWinOGLView::OnLButtonDown(UINT nFlags, CPoint point) {
 	
 	viewingTransformation(point.x, point.y, rect);
 
+	AC.AddVertex(x_Ldown, y_Ldown);
+
 	RedrawWindow();
 	CView::OnLButtonDown(nFlags, point);
 }
