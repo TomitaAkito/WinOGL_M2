@@ -3,8 +3,8 @@
 
 
 CAdminControl::CAdminControl() {
-	vertex_head = NULL;
-	vertex_tail = NULL;
+	shape_head = NULL;
+	shape_tail = NULL;
 }
 
 
@@ -12,8 +12,10 @@ CAdminControl::~CAdminControl() {
 }
 
 void CAdminControl::Draw() {
+	// 例外処理
+	if (!shape_head) return;
 
-	for (CVertex* currentV = vertex_head;currentV != NULL;currentV = currentV->GetNextVertex()) {
+	for (CVertex* currentV = shape_head->GetVertexHead();currentV != NULL;currentV = currentV->GetNextVertex()) {
 		DrawVertex(currentV, 1.0, 1.0, 1.0, 10, GL_POINTS);
 		DrawLine(currentV, 1.0, 1.0, 1.0, 2.0, GL_LINE_STRIP);
 	}
@@ -43,13 +45,12 @@ void CAdminControl::DrawLine(CVertex* currentV, float R, float G, float B, float
 void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 	CVertex* newVertex = new CVertex(mouse_x, mouse_y);
 
-	// もしvertex_headが無ければ，それを最初のVertexにする
-	if(!vertex_head){
-		vertex_head = newVertex;
-		vertex_tail = newVertex;
-	}else {
-		vertex_tail->SetNextVertex(newVertex);
-		newVertex->SetPreVertex(vertex_tail);
-		vertex_tail = newVertex;
+	// もしshape_headが無ければ，生成する
+	if (!shape_head) {
+		CShape* shape = new CShape();
+		shape_head = shape;
 	}
+	
+	shape_head->AddVertex(newVertex);
+	
 }

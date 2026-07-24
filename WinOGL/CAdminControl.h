@@ -1,13 +1,14 @@
 #pragma once
 #include "pch.h"
 #include <gl/GL.h>
+#include "CShape.h"
 #include "CVertex.h"
 
 
 class CAdminControl {
 #pragma region 変数
-	CVertex* vertex_head;
-	CVertex* vertex_tail;
+	CShape* shape_head;
+	CShape* shape_tail;
 
 #pragma endregion
 
