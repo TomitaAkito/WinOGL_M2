@@ -42,6 +42,12 @@ public:
 	void SetVertex(float mouse_x, float mouse_y);
 
 	/// <summary>
+	/// マウス座標を頂点座標にSetする
+	/// </summary>
+	/// <param name="vertex">頂点</param>
+	void SetVertex(CVertex* vertex);
+
+	/// <summary>
 	/// 次の座標をSetする
 	/// </summary>
 	/// <param name="nextVertex">アドレス</param>

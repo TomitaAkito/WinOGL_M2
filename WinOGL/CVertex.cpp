@@ -23,6 +23,11 @@ void CVertex::SetVertex(float mouse_x, float mouse_y) {
 	y = mouse_y;
 }
 
+void CVertex::SetVertex(CVertex* vertex) {
+	x = vertex->GetX();
+	y = vertex->GetY();
+}
+
 void CVertex::SetNextVertex(CVertex* nextVertex) {
 	next = nextVertex;
 }

@@ -198,6 +198,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CAdminControl.h" />
+    <ClInclude Include="CMath.h" />
     <ClInclude Include="CShape.h" />
     <ClInclude Include="CVertex.h" />
     <ClInclude Include="framework.h" />
@@ -211,6 +212,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CAdminControl.cpp" />
+    <ClCompile Include="CMath.cpp" />
     <ClCompile Include="CShape.cpp" />
     <ClCompile Include="CVertex.cpp" />
     <ClCompile Include="MainFrm.cpp" />

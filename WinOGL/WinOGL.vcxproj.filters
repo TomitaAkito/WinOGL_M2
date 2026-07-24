@@ -48,6 +48,9 @@
     <ClInclude Include="CShape.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="CMath.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinOGL.cpp">
@@ -72,6 +75,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="CShape.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="CMath.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
