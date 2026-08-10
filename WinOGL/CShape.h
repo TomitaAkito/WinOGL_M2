@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "CVertex.h"
+#include "CVector.h"
 #include "CMath.h"
 
 class CShape {
@@ -80,6 +81,36 @@ public:
 	/// <param name="newVertex">加える座標</param>
 	/// <returns>[True]座標追加完了　[False]座標追加不可</returns>
 	bool AddVertex(CVertex* newVertex);
+
+#pragma endregion
+
+#pragma region 判定
+public:
+
+	/// <summary>
+	/// 新しく追加する頂点が自交差するか判定する
+	/// </summary>
+	/// <param name="newVertex">加える座標</param>
+	/// <returns>[True]自交差する　[False]自交差しない</returns>
+	bool IsSelfCrossing(CVertex* newVertex);
+
+	/// <summary>
+	/// [砂時計型]新しく追加する頂点が自交差するか判定する
+	/// </summary>
+	/// <returns>[True]自交差する　[False]自交差しない</returns>
+	bool IsSelfCrossing_SandglassType();
+
+
+	/// <summary>
+	/// 4つの頂点からなる線分が交差するか判定する
+	/// </summary>
+	/// <param name="As">線分Aの始点</param>
+	/// <param name="Ae">線分Aの終点</param>
+	/// <param name="Bs">線分Bの始点</param>
+	/// <param name="Be">線分Bの終点</param>
+	/// <returns>[True]交差する　[False]交差しない</returns>
+	bool IsCrossing2Lines(CVertex* As, CVertex* Ae, CVertex* Bs, CVertex* Be);
+	
 
 #pragma endregion
 };
