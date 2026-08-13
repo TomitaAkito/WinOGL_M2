@@ -68,5 +68,25 @@ public:
 	void AddVertex(float mouse_x, float mouse_y);
 #pragma endregion
 
+#pragma region 判定
+
+public:
+
+	/// <summary>
+	/// 他の図形斗交差していないか(他交差)を判定する
+	/// </summary>
+	/// <param name="newVertex">新しい頂点</param>
+	/// <returns>[true]交差している　[false]交差していない</returns>
+	bool isOtherCrossing(CVertex* newVertex);
+
+	/// <summary>
+	/// 頂点が格納されている図形を返す
+	/// </summary>
+	/// <param name="vertex">頂点</param>
+	/// <returns>図形のアドレス，なければNULL</returns>
+	CShape* isVertexInShape(CVertex* vertex);
+
+#pragma endregion
+
 };
 

@@ -82,6 +82,13 @@ public:
 	/// <returns>[True]座標追加完了　[False]座標追加不可</returns>
 	bool AddVertex(CVertex* newVertex);
 
+	/// <summary>
+	/// 指定された頂点を削除する
+	/// </summary>
+	/// <param name="deleteVertex">削除対象の頂点</param>
+	/// <returns>[True]削除完了　[False]削除不可</returns>
+	bool freeVertex(CVertex* deleteVertex);
+
 #pragma endregion
 
 #pragma region 判定
@@ -111,6 +118,14 @@ public:
 	/// <returns>[True]交差する　[False]交差しない</returns>
 	bool IsCrossing2Lines(CVertex* As, CVertex* Ae, CVertex* Bs, CVertex* Be);
 	
+
+	/// <summary>
+	/// 二つの頂点が一致するか調査する
+	/// </summary>
+	/// <param name="v1">頂点1</param>
+	/// <param name="v2">頂点2</param>
+	/// <returns>[True]一致　[False]不一致</returns>
+	bool isVertexCoordinate(CVertex* v1, CVertex* v2);
 
 #pragma endregion
 };

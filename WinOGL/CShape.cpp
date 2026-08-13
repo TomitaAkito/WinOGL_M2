@@ -62,6 +62,8 @@ bool CShape::AddVertex(CVertex* newVertex) {
 	CMath calc;
 	// もし形状を閉じるのであれば
 	if (vertex_count >= 3 && calc.distanceVertex2Vertex(newVertex, vertex_head) < close_dis) {
+		
+		// 自交差判定込み
 		newVertex->SetVertex(vertex_head);
 
 		if (IsSelfCrossing_SandglassType()) {
@@ -86,6 +88,38 @@ bool CShape::AddVertex(CVertex* newVertex) {
 	vertex_tail = newVertex;
 	vertex_count++;
 	return true;	
+}
+
+bool CShape::freeVertex(CVertex* deleteVertex) {
+
+	for (CVertex* currentVertex = vertex_head; currentVertex != NULL; currentVertex = currentVertex->GetNextVertex()) {
+		if (isVertexCoordinate(currentVertex, deleteVertex)) {
+
+			// ポインタ比較でHeadかどうかを判定
+			if (vertex_head == currentVertex) {
+				vertex_head = currentVertex->GetNextVertex();
+			}
+			// ポインタ比較でTailかどうかを判定
+			if (vertex_tail == currentVertex) {
+				vertex_tail = currentVertex->GetPreVertex();
+			}
+
+			// 前の頂点が存在するなら、そのNextを次の頂点に繋ぐ
+			if (currentVertex->GetPreVertex()) {
+				currentVertex->GetPreVertex()->SetNextVertex(currentVertex->GetNextVertex());
+			}
+
+			// 次の頂点が存在するなら、そのPreを前の頂点に繋ぐ
+			if (currentVertex->GetNextVertex()) {
+				currentVertex->GetNextVertex()->SetPreVertex(currentVertex->GetPreVertex());
+			}
+
+			delete currentVertex;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool CShape::IsSelfCrossing(CVertex* newVertex) {
@@ -121,6 +155,9 @@ bool CShape::IsSelfCrossing_SandglassType() {
 }
 
 bool CShape::IsCrossing2Lines(CVertex* As, CVertex* Ae, CVertex* Bs, CVertex* Be) {
+	// 例外処理
+	if (!As || !Ae || !Bs || !Be) return false;
+	
 	CMath calc;
 
 	// ベクトル
@@ -141,5 +178,17 @@ bool CShape::IsCrossing2Lines(CVertex* As, CVertex* Ae, CVertex* Bs, CVertex* Be
 	if ((ca1 * ca2 <= 0) && (cb1 * cb2 <= 0)) 
 		return true;
 	
+	return false;
+}
+
+bool CShape::isVertexCoordinate(CVertex* v1, CVertex* v2) {
+
+	// アドレスが一致しているか
+	if (v1 == v2) return true;
+
+	// 座標が一致しているか
+	if (v1->GetX() == v2->GetX() && v1->GetY() == v2->GetY())
+		return true;
+
 	return false;
 }

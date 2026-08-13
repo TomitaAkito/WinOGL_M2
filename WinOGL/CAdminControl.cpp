@@ -56,8 +56,16 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 
 	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
 		// 探索している図形で頂点を作れた場合は終了
+		
+		// 自交差判定込み
 		bool vertexAddflag = currentShape->AddVertex(newVertex);
-		if (!currentShape->GetCloseFlag() && vertexAddflag) return;
+		
+		// 他交差判定
+		if (vertexAddflag && isOtherCrossing(newVertex)) {
+			currentShape->freeVertex(newVertex);
+		}
+				
+		if (vertexAddflag && !currentShape->GetCloseFlag()) return;
 
 		// 今回の処理で図形が閉じた場合は新しい図形を設ける
 		if (currentShape->GetCloseFlag() && vertexAddflag) {
@@ -73,4 +81,35 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 		if (currentShape->GetCloseFlag()==false && !vertexAddflag) return;
 		
 	}
+}
+
+bool CAdminControl::isOtherCrossing(CVertex* newVertex) {
+	// 例外処理
+	if (!shape_head->GetNextShape())return false;
+
+	CShape* newVertexShape = isVertexInShape(newVertex);
+
+	for (CShape* currentShape = shape_head; currentShape != NULL; currentShape = currentShape->GetNextShape()) {
+
+		// 自分の図形は例外
+		if (currentShape == newVertexShape) continue;
+
+		for (CVertex* currentVertex = currentShape->GetVertexHead(); currentVertex != NULL; currentVertex = currentVertex->GetNextVertex()) {
+			if (currentShape->IsCrossing2Lines(currentVertex, currentVertex->GetNextVertex(), shape_tail->GetVertexTail()->GetPreVertex(), newVertex))
+				return true;
+		}
+	}
+	return false;
+}
+
+CShape* CAdminControl::isVertexInShape(CVertex* vertex) {
+
+	for (CShape* currentShape = shape_head; currentShape != NULL; currentShape = currentShape->GetNextShape()) {
+		for (CVertex* currentVertex = currentShape->GetVertexHead(); currentVertex != NULL; currentVertex = currentVertex->GetNextVertex()) {
+			if (currentShape->isVertexCoordinate(currentVertex, vertex))
+				return currentShape;
+		}
+	}
+
+	return nullptr;
 }
