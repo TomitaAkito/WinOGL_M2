@@ -5,6 +5,7 @@
 CAdminControl::CAdminControl() {
 	shape_head = NULL;
 	shape_tail = NULL;
+	mouseVertex = new CVertex();
 }
 
 
@@ -15,12 +16,17 @@ void CAdminControl::Draw() {
 	// 例外処理
 	if (!shape_head) return;
 
+	// 図形リストの描画
 	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
 		for (CVertex* currentV = currentShape->GetVertexHead();currentV != NULL;currentV = currentV->GetNextVertex()) {
 			DrawVertex(currentV, 1.0, 1.0, 1.0, 10, GL_POINTS);
-			DrawLine(currentV, 1.0, 1.0, 1.0, 2.0, GL_LINE_STRIP);
+			if (currentV->GetNextVertex())
+				DrawLine(currentV,currentV->GetNextVertex(), 1.0, 1.0, 1.0, 2.0, GL_LINE_STRIP);
 		}
 	}
+
+	// 予測線の描画
+	DrawForecastLine();
 }
 
 void CAdminControl::DrawVertex(CVertex* currentV, float R, float G, float B, float size, char mode) {
@@ -31,17 +37,47 @@ void CAdminControl::DrawVertex(CVertex* currentV, float R, float G, float B, flo
 	glEnd();
 }
 
-void CAdminControl::DrawLine(CVertex* currentV, float R, float G, float B, float size, char mode) {
-	// 例外処理
-	if (!currentV->GetNextVertex()) return;
-
+void CAdminControl::DrawLine(CVertex* v1, CVertex* v2, float R, float G, float B, float size, char mode) {
 	glColor3f(R, G, B);
 	glLineWidth(size);
 	glBegin(mode);
 
-	glVertex2f(currentV->GetX(), currentV->GetY());
-	glVertex2f(currentV->GetNextVertex()->GetX(), currentV->GetNextVertex()->GetY());
+	glVertex2f(v1->GetX(), v1->GetY());
+	glVertex2f(v2->GetX(), v2->GetY());
 	glEnd();
+}
+
+void CAdminControl::DrawForecastLine() {
+	// 例外処理
+	if (!shape_head || !shape_tail) return;
+	if (!shape_tail->GetVertexHead()) return;
+
+	
+	// 自交差判定
+	bool drawFlag = shape_tail->IsSelfCrossing(mouseVertex);
+
+	// 他交差
+	if (!drawFlag && shape_head!=shape_tail) {
+		CVertex* tmpVertex = new CVertex(mouseVertex->GetX(), mouseVertex->GetY());
+		shape_tail->AddVertex(tmpVertex);
+		drawFlag = isOtherCrossing(tmpVertex);
+		shape_tail->freeVertex(tmpVertex);
+	}
+
+	// 破線を可能にする
+	glEnable(GL_LINE_STIPPLE);
+	//破線のパターンの指定（0xF0F0の部分がそれ）
+	glLineStipple(1, 0xF0F0);
+
+	if (drawFlag) DrawLine(mouseVertex, shape_tail->GetVertexTail(), 1.0, 0.0, 0.0, 2.0, GL_LINE_STRIP);
+	else DrawLine(mouseVertex, shape_tail->GetVertexTail(), 0.0, 1.0, 0.0, 2.0, GL_LINE_STRIP);
+
+	// 破線の終了
+	glDisable(GL_LINE_STIPPLE);
+}
+
+void CAdminControl::SetMouseVertex(float mouse_x, float mouse_y) {
+	mouseVertex->SetVertex(mouse_x, mouse_y);
 }
 
 void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
@@ -51,6 +87,7 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 	if (!shape_head) {
 		CShape* shape = new CShape();
 		shape_head = shape;
+		shape_tail = shape;
 	}
 
 

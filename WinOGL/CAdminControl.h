@@ -9,6 +9,7 @@ class CAdminControl {
 #pragma region 変数
 	CShape* shape_head;
 	CShape* shape_tail;
+	CVertex* mouseVertex;
 
 #pragma endregion
 
@@ -54,8 +55,23 @@ public:
 	/// <param name="B">青</param>
 	/// <param name="size">頂点のサイズ</param>
 	/// <param name="mode">描画モード</param>
-	void DrawLine(CVertex* currentV, float R, float G, float B, float size, char mode);
+	void DrawLine(CVertex* v1,CVertex* v2, float R, float G, float B, float size, char mode);
 
+	/// <summary>
+	/// 予測線を描画する
+	/// </summary>
+	void DrawForecastLine();
+
+#pragma endregion
+
+#pragma region Set
+public:
+	/// <summary>
+	/// マウス座標を保存する
+	/// </summary>
+	/// <param name="mouse_x">float:マウスx座標</param>
+	/// <param name="mouse_y">float:マウスy座標</param>
+	void SetMouseVertex(float mouse_x, float mouse_y);
 #pragma endregion
 
 #pragma region 頂点関係

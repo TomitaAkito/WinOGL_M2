@@ -29,6 +29,7 @@ ON_WM_CREATE()
 ON_WM_DESTROY()
 ON_WM_ERASEBKGND()
 ON_WM_SIZE()
+ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -199,3 +200,15 @@ void CWinOGLView::viewingTransformation(float x, float y, CRect rect) {
 	}
 }
 
+
+void CWinOGLView::OnMouseMove(UINT nFlags, CPoint point) {
+	// 描画領域の大きさを取得
+	CRect rect;
+	GetClientRect(rect);
+
+	viewingTransformation(point.x, point.y, rect);
+
+	AC.SetMouseVertex(x_Ldown, y_Ldown);
+	RedrawWindow();
+	CView::OnMouseMove(nFlags, point);
+}

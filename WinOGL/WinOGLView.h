@@ -68,6 +68,7 @@ public:
 	void viewingTransformation(float x,float y,CRect rect);
 
 #pragma endregion
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // WinOGLView.cpp のデバッグ バージョン
