@@ -107,10 +107,12 @@ bool CShape::freeVertex(CVertex* deleteVertex) {
 			// ポインタ比較でHeadかどうかを判定
 			if (vertex_head == currentVertex) {
 				vertex_head = currentVertex->GetNextVertex();
+				vertex_head->SetPreVertex(NULL);
 			}
 			// ポインタ比較でTailかどうかを判定
 			if (vertex_tail == currentVertex) {
 				vertex_tail = currentVertex->GetPreVertex();
+				vertex_tail->SetNextVertex(NULL);
 			}
 
 			// 前の頂点が存在するなら、そのNextを次の頂点に繋ぐ
