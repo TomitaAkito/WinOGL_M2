@@ -61,7 +61,8 @@ void CAdminControl::DrawForecastLine() {
 		CVertex* tmpVertex = new CVertex(mouseVertex->GetX(), mouseVertex->GetY());
 		shape_tail->AddVertex(tmpVertex);
 		drawFlag = isOtherCrossing(tmpVertex);
-		shape_tail->freeVertex(tmpVertex);
+		if (!shape_tail->GetCloseFlag())shape_tail->freeVertex(tmpVertex);
+		else shape_tail->freeVertex(shape_tail->GetVertexTail());
 	}
 
 	// 破線を可能にする
@@ -84,7 +85,7 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 	CVertex* newVertex = new CVertex(mouse_x, mouse_y);
 
 	// もしshape_headが無ければ，生成する
-	if (!shape_head) {
+	if (!shape_head && !shape_tail) {
 		CShape* shape = new CShape();
 		shape_head = shape;
 		shape_tail = shape;
@@ -96,26 +97,27 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 		
 		// 自交差判定込み
 		bool vertexAddflag = currentShape->AddVertex(newVertex);
+		if (!vertexAddflag) continue;
 		
 		// 他交差判定
-		if (vertexAddflag && isOtherCrossing(newVertex)) {
+		if (isOtherCrossing(newVertex)) {
 			currentShape->freeVertex(newVertex);
 		}
-				
-		if (vertexAddflag && !currentShape->GetCloseFlag()) return;
+		
+		// 図形を閉じない場合は終了
+		if (!currentShape->GetCloseFlag()) return;
 
 		// 今回の処理で図形が閉じた場合は新しい図形を設ける
-		if (currentShape->GetCloseFlag() && vertexAddflag) {
-			CShape* newShape = new CShape();
-			currentShape->SetNextShape(newShape);
-			shape_tail = newShape;
-			shape_tail->SetPreShape(currentShape);
-			return;
-		}
+		CShape* newShape = new CShape();
+		currentShape->SetNextShape(newShape);
+		shape_tail = newShape;
+		shape_tail->SetPreShape(currentShape);
+		return;
+		
 		
 		// 探索図形の形状が閉じていないで無理だった場合，終了
 		// 自交差など…
-		if (currentShape->GetCloseFlag()==false && !vertexAddflag) return;
+		//if (currentShape->GetCloseFlag()==false && !vertexAddflag) return;
 		
 	}
 }
@@ -123,8 +125,10 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 bool CAdminControl::isOtherCrossing(CVertex* newVertex) {
 	// 例外処理
 	if (!shape_head->GetNextShape())return false;
+	//CShape* newShape = isVertexInShape(newVertex);
+	if (shape_tail->GetVertex_count() <= 1) return false;
 
-	CShape* newVertexShape = isVertexInShape(newVertex);
+	CShape* newVertexShape = shape_tail;
 
 	for (CShape* currentShape = shape_head; currentShape != NULL; currentShape = currentShape->GetNextShape()) {
 

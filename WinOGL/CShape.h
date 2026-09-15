@@ -71,6 +71,12 @@ public:
 	/// <returns>[true]閉じている [false]開いている</returns>
 	bool GetCloseFlag();
 
+	/// <summary>
+	/// vertex_countを返す
+	/// </summary>
+	/// <returns>[int]頂点の個数</returns>
+	int GetVertex_count();
+
 #pragma endregion
 
 #pragma region Vertex

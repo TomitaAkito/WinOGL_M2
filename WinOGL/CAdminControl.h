@@ -89,7 +89,7 @@ public:
 public:
 
 	/// <summary>
-	/// 他の図形斗交差していないか(他交差)を判定する
+	/// 他の図形と交差していないか(他交差)を判定する
 	/// </summary>
 	/// <param name="newVertex">新しい頂点</param>
 	/// <returns>[true]交差している　[false]交差していない</returns>

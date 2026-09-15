@@ -43,6 +43,10 @@ bool CShape::GetCloseFlag() {
 	return close_flag;
 }
 
+int CShape::GetVertex_count() {
+	return vertex_count;
+}
+
 bool CShape::AddVertex(CVertex* newVertex) {
 	// 例外処理
 	// --形状を閉じている場合
@@ -92,8 +96,13 @@ bool CShape::AddVertex(CVertex* newVertex) {
 
 bool CShape::freeVertex(CVertex* deleteVertex) {
 
-	for (CVertex* currentVertex = vertex_head; currentVertex != NULL; currentVertex = currentVertex->GetNextVertex()) {
+	for (CVertex* currentVertex = vertex_tail; currentVertex != NULL; currentVertex = currentVertex->GetPreVertex()) {
 		if (isVertexCoordinate(currentVertex, deleteVertex)) {
+
+			// 図形が閉じている場合
+			if (isVertexCoordinate(vertex_head, vertex_tail)) {
+				close_flag = false;
+			}
 
 			// ポインタ比較でHeadかどうかを判定
 			if (vertex_head == currentVertex) {
@@ -113,7 +122,7 @@ bool CShape::freeVertex(CVertex* deleteVertex) {
 			if (currentVertex->GetNextVertex()) {
 				currentVertex->GetNextVertex()->SetPreVertex(currentVertex->GetPreVertex());
 			}
-
+			vertex_count--;
 			delete currentVertex;
 			return true;
 		}
