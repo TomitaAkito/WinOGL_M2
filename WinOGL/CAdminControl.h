@@ -3,7 +3,7 @@
 #include <gl/GL.h>
 #include "CShape.h"
 #include "CVertex.h"
-
+#include "CMath.h"
 
 class CAdminControl {
 #pragma region 変数
@@ -101,6 +101,13 @@ public:
 	/// <param name="vertex">頂点</param>
 	/// <returns>図形のアドレス，なければNULL</returns>
 	CShape* isVertexInShape(CVertex* vertex);
+
+	/// <summary>
+	/// 頂点が内包していないか判定する
+	/// </summary>
+	/// <param name="newVertex">新しい頂点</param>
+	/// <returns>[True]内包している　[false]内包していない</returns>
+	bool isContainsVertex(CVertex* newVertex);
 
 #pragma endregion
 

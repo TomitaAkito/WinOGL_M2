@@ -100,9 +100,10 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 		if (!vertexAddflag) continue;
 		
 		// 他交差判定
-		if (isOtherCrossing(newVertex)) {
-			currentShape->freeVertex(newVertex);
-		}
+		if (isOtherCrossing(newVertex)) currentShape->freeVertex(newVertex);
+
+		// 他交差判定
+		if(isContainsVertex(newVertex))	currentShape->freeVertex(newVertex);
 		
 		// 図形を閉じない場合は終了
 		if (!currentShape->GetCloseFlag()) return;
@@ -112,13 +113,7 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 		currentShape->SetNextShape(newShape);
 		shape_tail = newShape;
 		shape_tail->SetPreShape(currentShape);
-		return;
-		
-		
-		// 探索図形の形状が閉じていないで無理だった場合，終了
-		// 自交差など…
-		//if (currentShape->GetCloseFlag()==false && !vertexAddflag) return;
-		
+		return;		
 	}
 }
 
@@ -153,4 +148,24 @@ CShape* CAdminControl::isVertexInShape(CVertex* vertex) {
 	}
 
 	return nullptr;
+}
+
+bool CAdminControl::isContainsVertex(CVertex* newVertex) {
+	// 例外判定
+	if (shape_head == shape_tail)return false;
+
+	CMath calc;
+	CShape* newShape = isVertexInShape(newVertex);
+	float angle;
+
+	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape != currentShape->GetNextShape()) {
+		// 自分の図形は参照しない
+		if (currentShape == newShape) continue;
+		angle = calc.angle(currentShape, newVertex);
+
+		if (calc.GetPie() * 2 * 0.9 <= angle && angle <= calc.GetPie() * 2 * 1.1)
+			return true;
+	}
+
+	return false;
 }
