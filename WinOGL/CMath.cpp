@@ -43,5 +43,5 @@ float CMath::angle(CShape* shape, CVertex* baseVertex) {
         else
             result -= angle2Line(vec1, vec2);
     }
-    return result;
+    return abs(result);
 }

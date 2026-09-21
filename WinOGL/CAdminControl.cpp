@@ -56,11 +56,19 @@ void CAdminControl::DrawForecastLine() {
 	// 自交差判定
 	bool drawFlag = shape_tail->IsSelfCrossing(mouseVertex);
 
-	// 他交差
+	// 他交差 & 内包判定
 	if (!drawFlag && shape_head!=shape_tail) {
+		// 一旦図形に仮の頂点を挿入
 		CVertex* tmpVertex = new CVertex(mouseVertex->GetX(), mouseVertex->GetY());
 		shape_tail->AddVertex(tmpVertex);
+
+		// 他交差判定
 		drawFlag = isOtherCrossing(tmpVertex);
+
+		// 内包判定
+		if(!drawFlag) drawFlag = isContains(tmpVertex);
+
+		// 仮の頂点を削除
 		if (!shape_tail->GetCloseFlag())shape_tail->freeVertex(tmpVertex);
 		else shape_tail->freeVertex(shape_tail->GetVertexTail());
 	}
@@ -164,8 +172,6 @@ bool CAdminControl::isContainsVertex(CVertex* newVertex) {
 	float angle;
 
 	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
-		// 自分の図形は参照しない
-		if (currentShape == newShape) continue;
 		angle = calc.angle(currentShape, newVertex);
 
 		if (calc.GetPie() * 2 * 0.9 <= angle && angle <= calc.GetPie() * 2 * 1.1)
@@ -181,7 +187,7 @@ bool CAdminControl::isContainsShape() {
 	CMath calc;
 	float angle;
 
-	for(CShape* currentShape = shape_head;currentShape != shape_tail;currentShape = currentShape->GetNextShape()) {
+	for(CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
 		angle = calc.angle(shape_tail, currentShape->GetVertexHead());
 
 		if(calc.GetPie() * 2 * 0.9 <= angle && angle <= calc.GetPie() * 2 * 1.1)
