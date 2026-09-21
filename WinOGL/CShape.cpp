@@ -104,6 +104,16 @@ bool CShape::freeVertex(CVertex* deleteVertex) {
 				close_flag = false;
 			}
 
+			// headでありtailであるかどうか判定
+			// ※処理が煩雑になるためbreak
+			if(vertex_count == 1) {
+				vertex_head = NULL;
+				vertex_tail = NULL;
+				vertex_count--;
+				delete currentVertex;
+				return true;
+			}
+
 			// ポインタ比較でHeadかどうかを判定
 			if (vertex_head == currentVertex) {
 				vertex_head = currentVertex->GetNextVertex();

@@ -91,30 +91,24 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 		shape_tail = shape;
 	}
 
-
-	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
-		// 探索している図形で頂点を作れた場合は終了
+	// 自交差判定込みでshape_tailにくっつける
+	if (!shape_tail->AddVertex(newVertex)) return;
 		
-		// 自交差判定込み
-		bool vertexAddflag = currentShape->AddVertex(newVertex);
-		if (!vertexAddflag) continue;
-		
-		// 他交差判定
-		if (isOtherCrossing(newVertex)) currentShape->freeVertex(newVertex);
+	// 他交差判定
+	if (isOtherCrossing(newVertex)) shape_tail->freeVertex(newVertex);
 
-		// 他交差判定
-		if(isContainsVertex(newVertex))	currentShape->freeVertex(newVertex);
-		
-		// 図形を閉じない場合は終了
-		if (!currentShape->GetCloseFlag()) return;
+	// 内包判定
+	if(isContains(newVertex))	shape_tail->freeVertex(newVertex);
 
-		// 今回の処理で図形が閉じた場合は新しい図形を設ける
-		CShape* newShape = new CShape();
-		currentShape->SetNextShape(newShape);
-		shape_tail = newShape;
-		shape_tail->SetPreShape(currentShape);
-		return;		
-	}
+	// 図形を閉じない場合は終了
+	if (!shape_tail->GetCloseFlag()) return;
+
+	// 今回の処理で図形が閉じた場合は新しい図形を設ける
+	CShape* newShape = new CShape();
+	shape_tail->SetNextShape(newShape);
+	newShape->SetPreShape(shape_tail);
+	shape_tail = newShape;
+	return;		
 }
 
 bool CAdminControl::isOtherCrossing(CVertex* newVertex) {
@@ -150,6 +144,17 @@ CShape* CAdminControl::isVertexInShape(CVertex* vertex) {
 	return nullptr;
 }
 
+bool CAdminControl::isContains(CVertex* newVertex) {
+	// 新しく加えた頂点が内包しているか
+	if(isContainsVertex(newVertex))return true;
+
+	// 形状を閉じた際に図形を内包していないか
+	if(isContainsShape()) return true;
+
+	return false;
+}
+
+
 bool CAdminControl::isContainsVertex(CVertex* newVertex) {
 	// 例外判定
 	if (shape_head == shape_tail)return false;
@@ -158,7 +163,7 @@ bool CAdminControl::isContainsVertex(CVertex* newVertex) {
 	CShape* newShape = isVertexInShape(newVertex);
 	float angle;
 
-	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape != currentShape->GetNextShape()) {
+	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
 		// 自分の図形は参照しない
 		if (currentShape == newShape) continue;
 		angle = calc.angle(currentShape, newVertex);
@@ -166,6 +171,22 @@ bool CAdminControl::isContainsVertex(CVertex* newVertex) {
 		if (calc.GetPie() * 2 * 0.9 <= angle && angle <= calc.GetPie() * 2 * 1.1)
 			return true;
 	}
-
 	return false;
 }
+
+bool CAdminControl::isContainsShape() {
+	// 例外処理
+	if(!shape_tail->GetCloseFlag()) return false;
+	
+	CMath calc;
+	float angle;
+
+	for(CShape* currentShape = shape_head;currentShape != shape_tail;currentShape = currentShape->GetNextShape()) {
+		angle = calc.angle(shape_tail, currentShape->GetVertexHead());
+
+		if(calc.GetPie() * 2 * 0.9 <= angle && angle <= calc.GetPie() * 2 * 1.1)
+			return true;
+	}
+	return false;
+}
+

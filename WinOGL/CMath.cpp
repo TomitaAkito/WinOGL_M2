@@ -38,7 +38,10 @@ float CMath::angle(CShape* shape, CVertex* baseVertex) {
         CVector vec1(baseVertex, currentV);
         CVector vec2(baseVertex, currentV->GetNextVertex());
 
-        result += angle2Line(vec1, vec2);
+        if(crossProduct(vec1, vec2) > 0)
+            result += angle2Line(vec1, vec2);
+        else
+            result -= angle2Line(vec1, vec2);
     }
     return result;
 }

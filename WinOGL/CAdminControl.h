@@ -103,11 +103,24 @@ public:
 	CShape* isVertexInShape(CVertex* vertex);
 
 	/// <summary>
+	/// 内包しているか判定する
+	/// </summary>
+	/// <param name="newVertex">新しい頂点</param>
+	/// <returns>[True]内包している　[false]内包していない</returns>
+	bool isContains(CVertex* newVertex);
+
+	/// <summary>
 	/// 頂点が内包していないか判定する
 	/// </summary>
 	/// <param name="newVertex">新しい頂点</param>
 	/// <returns>[True]内包している　[false]内包していない</returns>
 	bool isContainsVertex(CVertex* newVertex);
+
+	/// <summary>
+	/// 図形を閉じた際に他の図形を内包していないか判定する
+	/// </summary>
+	/// <returns>[True]内包している　[false]内包していない</returns>
+	bool isContainsShape();
 
 #pragma endregion
 
