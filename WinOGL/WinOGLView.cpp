@@ -12,6 +12,7 @@
 
 #include "WinOGLDoc.h"
 #include "WinOGLView.h"
+#include "Resource.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -30,6 +31,8 @@ ON_WM_DESTROY()
 ON_WM_ERASEBKGND()
 ON_WM_SIZE()
 ON_WM_MOUSEMOVE()
+ON_COMMAND(ID_SIZEUP, &CWinOGLView::OnSizeup)
+ON_COMMAND(ID_SIZEDOWN, &CWinOGLView::OnSizedown)
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -211,4 +214,14 @@ void CWinOGLView::OnMouseMove(UINT nFlags, CPoint point) {
 	AC.SetMouseVertex(x_Ldown, y_Ldown);
 	RedrawWindow();
 	CView::OnMouseMove(nFlags, point);
+}
+
+void CWinOGLView::OnSizeup() {
+	AC.DrawSizeChange(1);
+	RedrawWindow();
+}
+
+void CWinOGLView::OnSizedown() {
+	AC.DrawSizeChange(-1);
+	RedrawWindow();
 }

@@ -10,6 +10,8 @@ class CAdminControl {
 	CShape* shape_head;
 	CShape* shape_tail;
 	CVertex* mouseVertex;
+	float POINTSIZE;
+	float LINEWIDTH;
 
 #pragma endregion
 
@@ -121,6 +123,17 @@ public:
 	/// </summary>
 	/// <returns>[True]内包している　[false]内包していない</returns>
 	bool isContainsShape();
+
+#pragma endregion
+
+#pragma region その他
+public:
+
+	/// <summary>
+	/// 点・線を太くする
+	/// </summary>
+	/// <param name="mode">[正]太くする [負]補足する</param>
+	void DrawSizeChange(int mode);
 
 #pragma endregion
 

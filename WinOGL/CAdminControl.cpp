@@ -6,6 +6,8 @@ CAdminControl::CAdminControl() {
 	shape_head = NULL;
 	shape_tail = NULL;
 	mouseVertex = new CVertex();
+	POINTSIZE = 10;
+	LINEWIDTH = 2.0;
 }
 
 
@@ -19,9 +21,9 @@ void CAdminControl::Draw() {
 	// 図形リストの描画
 	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
 		for (CVertex* currentV = currentShape->GetVertexHead();currentV != NULL;currentV = currentV->GetNextVertex()) {
-			DrawVertex(currentV, 1.0, 1.0, 1.0, 10, GL_POINTS);
+			DrawVertex(currentV, 1.0, 1.0, 1.0, POINTSIZE, GL_POINTS);
 			if (currentV->GetNextVertex())
-				DrawLine(currentV,currentV->GetNextVertex(), 1.0, 1.0, 1.0, 2.0, GL_LINE_STRIP);
+				DrawLine(currentV,currentV->GetNextVertex(), 1.0, 1.0, 1.0, LINEWIDTH, GL_LINE_STRIP);
 		}
 	}
 
@@ -78,8 +80,8 @@ void CAdminControl::DrawForecastLine() {
 	//破線のパターンの指定（0xF0F0の部分がそれ）
 	glLineStipple(1, 0xF0F0);
 
-	if (drawFlag) DrawLine(mouseVertex, shape_tail->GetVertexTail(), 1.0, 0.0, 0.0, 2.0, GL_LINE_STRIP);
-	else DrawLine(mouseVertex, shape_tail->GetVertexTail(), 0.0, 1.0, 0.0, 2.0, GL_LINE_STRIP);
+	if (drawFlag) DrawLine(mouseVertex, shape_tail->GetVertexTail(), 1.0, 0.0, 0.0, LINEWIDTH, GL_LINE_STRIP);
+	else DrawLine(mouseVertex, shape_tail->GetVertexTail(), 0.0, 1.0, 0.0, LINEWIDTH, GL_LINE_STRIP);
 
 	// 破線の終了
 	glDisable(GL_LINE_STIPPLE);
@@ -194,5 +196,23 @@ bool CAdminControl::isContainsShape() {
 			return true;
 	}
 	return false;
+}
+
+void CAdminControl::DrawSizeChange(int mode) {
+	if (mode > 0) {
+		if (LINEWIDTH <= 10.0) {
+			POINTSIZE += 0.7;
+			LINEWIDTH += 0.4;
+		}
+	}
+	else {
+		if (LINEWIDTH >= 1) {
+			POINTSIZE -= 0.7;
+			LINEWIDTH -= 0.4;
+		}
+	}
+
+
+	
 }
 

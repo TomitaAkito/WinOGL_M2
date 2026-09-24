@@ -69,6 +69,8 @@ public:
 
 #pragma endregion
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnSizeup();
+	afx_msg void OnSizedown();
 };
 
 #ifndef _DEBUG  // WinOGLView.cpp のデバッグ バージョン
