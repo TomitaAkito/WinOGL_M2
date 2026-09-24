@@ -7,11 +7,14 @@
 
 class CAdminControl {
 #pragma region 変数
+private:
 	CShape* shape_head;
 	CShape* shape_tail;
 	CVertex* mouseVertex;
 	float POINTSIZE;
 	float LINEWIDTH;
+public:
+	bool AxisFlag;
 
 #pragma endregion
 
@@ -63,6 +66,11 @@ public:
 	/// 予測線を描画する
 	/// </summary>
 	void DrawForecastLine();
+
+	/// <summary>
+	/// 座標軸を描画する
+	/// </summary>
+	void DrawAxis();
 
 #pragma endregion
 

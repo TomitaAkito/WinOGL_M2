@@ -8,6 +8,7 @@ CAdminControl::CAdminControl() {
 	mouseVertex = new CVertex();
 	POINTSIZE = 10;
 	LINEWIDTH = 2.0;
+	AxisFlag = false;
 }
 
 
@@ -15,6 +16,9 @@ CAdminControl::~CAdminControl() {
 }
 
 void CAdminControl::Draw() {
+	// 座標軸の表示
+	if (AxisFlag) DrawAxis();
+
 	// 例外処理
 	if (!shape_head) return;
 
@@ -85,6 +89,24 @@ void CAdminControl::DrawForecastLine() {
 
 	// 破線の終了
 	glDisable(GL_LINE_STIPPLE);
+}
+
+// 座標軸の表示
+void CAdminControl::DrawAxis() {
+	glBegin(GL_LINES);
+	// x軸
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(-1.0, 0.0, 0.0);
+	glVertex3f(1.0, 0.0, 0.0);
+	// y軸
+	glColor3f(0.0, 1.0, 0.0);
+	glVertex3f(0.0, -1.0, 0.0);
+	glVertex3f(0.0, 1.0, 0.0);
+	// z軸
+	glColor3f(0.0, 0.0, 1.0);
+	glVertex3f(0.0, 0.0, -1.0);
+	glVertex3f(0.0, 0.0, 1.0);
+	glEnd();
 }
 
 void CAdminControl::SetMouseVertex(float mouse_x, float mouse_y) {
@@ -210,9 +232,6 @@ void CAdminControl::DrawSizeChange(int mode) {
 			POINTSIZE -= 0.7;
 			LINEWIDTH -= 0.4;
 		}
-	}
-
-
-	
+	}	
 }
 

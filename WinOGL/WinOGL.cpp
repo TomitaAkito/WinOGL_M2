@@ -149,8 +149,3 @@ void CWinOGLApp::OnAppAbout()
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
 }
-
-// CWinOGLApp メッセージ ハンドラー
-
-
-

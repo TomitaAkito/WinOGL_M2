@@ -33,6 +33,8 @@ ON_WM_SIZE()
 ON_WM_MOUSEMOVE()
 ON_COMMAND(ID_SIZEUP, &CWinOGLView::OnSizeup)
 ON_COMMAND(ID_SIZEDOWN, &CWinOGLView::OnSizedown)
+ON_COMMAND(ID_AXIS, &CWinOGLView::OnAxis)
+ON_UPDATE_COMMAND_UI(ID_AXIS, &CWinOGLView::OnUpdateAxis)
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -224,4 +226,13 @@ void CWinOGLView::OnSizeup() {
 void CWinOGLView::OnSizedown() {
 	AC.DrawSizeChange(-1);
 	RedrawWindow();
+}
+
+void CWinOGLView::OnAxis() {
+	AC.AxisFlag = !AC.AxisFlag;
+	RedrawWindow();
+}
+
+void CWinOGLView::OnUpdateAxis(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(AC.AxisFlag);
 }
