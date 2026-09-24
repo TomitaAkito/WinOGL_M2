@@ -30,9 +30,9 @@ void CAdminControl::Draw() {
 	// 図形リストの描画
 	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
 		for (CVertex* currentV = currentShape->GetVertexHead();currentV != NULL;currentV = currentV->GetNextVertex()) {
-			DrawVertex(currentV, 1.0, 1.0, 1.0, POINTSIZE, GL_POINTS);
+			DrawVertex(currentV, 1.0, 1.0, 1.0, POINTSIZE);
 			if (currentV->GetNextVertex())
-				DrawLine(currentV,currentV->GetNextVertex(), 1.0, 1.0, 1.0, LINEWIDTH, GL_LINE_STRIP);
+				DrawLine(currentV,currentV->GetNextVertex(), 1.0, 1.0, 1.0, LINEWIDTH);
 		}
 	}
 
@@ -43,18 +43,18 @@ void CAdminControl::Draw() {
 	if (EditFlag) DrawSelect();
 }
 
-void CAdminControl::DrawVertex(CVertex* currentV, float R, float G, float B, float size, char mode) {
+void CAdminControl::DrawVertex(CVertex* currentV, float R, float G, float B, float size) {
 	glColor3f(R, G, B);
 	glPointSize(size);
-	glBegin(mode);
+	glBegin(GL_POINTS);
 	glVertex2f(currentV->GetX(), currentV->GetY());
 	glEnd();
 }
 
-void CAdminControl::DrawLine(CVertex* v1, CVertex* v2, float R, float G, float B, float size, char mode) {
+void CAdminControl::DrawLine(CVertex* v1, CVertex* v2, float R, float G, float B, float size) {
 	glColor3f(R, G, B);
 	glLineWidth(size);
-	glBegin(mode);
+	glBegin(GL_LINE_STRIP);
 
 	glVertex2f(v1->GetX(), v1->GetY());
 	glVertex2f(v2->GetX(), v2->GetY());
@@ -92,8 +92,8 @@ void CAdminControl::DrawForecastLine() {
 	//破線のパターンの指定（0xF0F0の部分がそれ）
 	glLineStipple(1, 0xF0F0);
 
-	if (drawFlag) DrawLine(mouseVertex, shape_tail->GetVertexTail(), 1.0, 0.0, 0.0, LINEWIDTH, GL_LINE_STRIP);
-	else DrawLine(mouseVertex, shape_tail->GetVertexTail(), 0.0, 1.0, 0.0, LINEWIDTH, GL_LINE_STRIP);
+	if (drawFlag) DrawLine(mouseVertex, shape_tail->GetVertexTail(), 1.0, 0.0, 0.0, LINEWIDTH);
+	else DrawLine(mouseVertex, shape_tail->GetVertexTail(), 0.0, 1.0, 0.0, LINEWIDTH);
 
 	// 破線の終了
 	glDisable(GL_LINE_STIPPLE);
@@ -118,7 +118,8 @@ void CAdminControl::DrawAxis() {
 }
 
 void CAdminControl::DrawSelect() {
-	if (selectVertex) DrawVertex(selectVertex, 1.0, 0.0, 0.0, POINTSIZE, GL_POINTS);
+	if (selectVertex) DrawVertex(selectVertex, 1.0, 0.0, 0.0, POINTSIZE);
+	else if (selectLineStart) DrawLine(selectLineStart,selectLineStart->GetNextVertex(), 1.0, 0.0, 0.0, LINEWIDTH);
 }
 
 void CAdminControl::SetMouseVertex(float mouse_x, float mouse_y) {
@@ -166,9 +167,9 @@ void CAdminControl::Edit(float mouse_x, float mouse_y) {
 
 bool CAdminControl::Select() {
 	// 点の選択
-	SelectVertex(mouseVertex);
+	//SelectVertex(mouseVertex);
 	// 線の選択
-
+	SelectLine(mouseVertex);
 	// 図形の選択
 
 	return true;
@@ -193,6 +194,28 @@ void CAdminControl::SelectVertex(CVertex* clickVertex) {
 	}
 
 	if (closedVertex) selectVertex=closedVertex;
+}
+
+void CAdminControl::SelectLine(CVertex* clickVertex) {
+	// 定数定義
+	CVertex* closedLineStartVertex = NULL;
+	float closedDistance = INFINITY;
+	CMath calc;
+
+	for (CShape* currentShape = shape_head; currentShape != NULL; currentShape = currentShape->GetNextShape()) {
+		for (CVertex* currentVertex = currentShape->GetVertexHead(); currentVertex->GetNextVertex() != NULL; currentVertex = currentVertex->GetNextVertex()) {
+			// 距離を算出
+			float dis = calc.distanceVertex2Line(clickVertex,currentVertex);
+
+			if (dis < closedDistance && dis < SELECT_THRESHOLD) {
+				closedDistance = dis;
+				closedLineStartVertex = currentVertex;
+			}
+		}
+	}
+
+	if (closedLineStartVertex) selectLineStart = closedLineStartVertex;
+
 }
 
 bool CAdminControl::isOtherCrossing(CVertex* newVertex) {

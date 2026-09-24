@@ -53,8 +53,7 @@ public:
 	/// <param name="G">緑</param>
 	/// <param name="B">青</param>
 	/// <param name="size">頂点のサイズ</param>
-	/// <param name="mode">描画モード</param>
-	void DrawVertex(CVertex* currentV,float R,float G, float B,float size, char mode);
+	void DrawVertex(CVertex* currentV,float R,float G, float B,float size);
 
 	/// <summary>
 	/// 稜線を描画する
@@ -63,9 +62,8 @@ public:
 	/// <param name="R">赤</param>
 	/// <param name="G">緑</param>
 	/// <param name="B">青</param>
-	/// <param name="size">頂点のサイズ</param>
-	/// <param name="mode">描画モード</param>
-	void DrawLine(CVertex* v1,CVertex* v2, float R, float G, float B, float size, char mode);
+	/// <param name="size">頂点のサイズ</para
+	void DrawLine(CVertex* v1,CVertex* v2, float R, float G, float B, float size);
 
 	/// <summary>
 	/// 予測線を描画する
@@ -123,10 +121,16 @@ public:
 	bool Select();
 
 	/// <summary>
-	/// クリックした箇所の最も近い頂点を取得
+	/// クリックした箇所から最も近い頂点を取得
 	/// </summary>
 	/// <param name="clickVertex">クリックした箇所</param>
 	void SelectVertex(CVertex* clickVertex);
+
+	/// <summary>
+	/// クリックした箇所から最も近い線を取得
+	/// </summary>
+	/// <param name="clickVertex">クリックした箇所</param>
+	void SelectLine(CVertex* clickVertex);
 
 #pragma endregion
 

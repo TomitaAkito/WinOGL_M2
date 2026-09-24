@@ -22,6 +22,29 @@ public:
 	float distanceVertex2Vertex(CVertex* vertex1,CVertex* vertex2);
 
 	/// <summary>
+	/// 点と線の距離を算出する
+	/// </summary>
+	/// <param name="vertex">頂点</param>
+	/// <param name="lineStartVertex">線の視点</param>
+	/// <returns></returns>
+	float distanceVertex2Line(CVertex* vertex, CVertex* lineStartVertex);
+
+	/// <summary>
+	/// 2つのベクトルにおけるsinθを算出する
+	/// </summary>
+	/// <param name="a">aベクトル</param>
+	/// <param name="b">bベクトル</param>
+	/// <returns>[float]sinθ</returns>
+	float sineTheta(CVector a, CVector b);
+
+	/// <summary>
+	/// ベクトルの大きさ(スカラー値)を算出する
+	/// </summary>
+	/// <param name="vector">ベクトル</param>
+	/// <returns>スカラー値</returns>
+	float vectorSize(CVector vector);
+
+	/// <summary>
 	/// 2つのベクトルから外積を算出する
 	/// </summary>
 	/// <param name="vector1">ベクトル1</param>
@@ -59,5 +82,4 @@ public:
 	/// <param name="baseVertex">頂点</param>
 	/// <returns>角度の総和</returns>
 	float angle(CShape* shape, CVertex* baseVertex);
-
 };
