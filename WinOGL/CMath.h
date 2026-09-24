@@ -82,4 +82,12 @@ public:
 	/// <param name="baseVertex">頂点</param>
 	/// <returns>角度の総和</returns>
 	float angle(CShape* shape, CVertex* baseVertex);
+
+	/// <summary>
+	/// 正射影(A+tAB)の式におけるtを算出する
+	/// </summary>
+	/// <param name="a">ベクトル1</param>
+	/// <param name="b">ベクトル2</param>
+	/// <returns>t</returns>
+	float projectionT(CVector a, CVector b);
 };

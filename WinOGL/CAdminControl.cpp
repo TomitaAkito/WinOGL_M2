@@ -13,7 +13,7 @@ CAdminControl::CAdminControl() {
 	selectVertex = NULL;
 	selectLineStart = NULL;
 	selectShape = NULL;
-	SELECT_THRESHOLD = 0.05;
+	SELECT_THRESHOLD = 0.1;
 }
 
 
@@ -207,7 +207,7 @@ void CAdminControl::SelectLine(CVertex* clickVertex) {
 			// 距離を算出
 			float dis = calc.distanceVertex2Line(clickVertex,currentVertex);
 
-			if (dis < closedDistance && dis < SELECT_THRESHOLD) {
+			if (dis < closedDistance && dis < SELECT_THRESHOLD && isInternalDivision(clickVertex,currentVertex)) {
 				closedDistance = dis;
 				closedLineStartVertex = currentVertex;
 			}
@@ -292,6 +292,35 @@ bool CAdminControl::isContainsShape() {
 		if(calc.GetPie() * 2 * 0.9 <= angle && angle <= calc.GetPie() * 2 * 1.1)
 			return true;
 	}
+	return false;
+}
+
+bool CAdminControl::isInternalDivision(CVertex* vertex, CVertex* lineStartVertex) {
+
+	/*- 判定方法1：両端の頂点からベクトルを2つ作り，なす角から判定する -*/
+	// 学部時代ではこっちの方法．両端のなす角が90度以下なら内分点と判定する
+	//CVector ab(lineStartVertex, lineStartVertex->GetNextVertex());
+	//CVector ap(lineStartVertex, vertex);
+	//CMath calc;
+	//float StartAngle = calc.angle2Line(ab, ap);
+	//
+	//CVector ba(lineStartVertex->GetNextVertex(), lineStartVertex);
+	//CVector bp(lineStartVertex->GetNextVertex(), vertex);
+	//float EndAngle = calc.angle2Line(ba, bp);
+
+	//if (StartAngle < calc.GetPie() / 2 && EndAngle < calc.GetPie() / 2) return true;
+	//return false;
+
+	/*- 判定方法2：パラメータtによる判定 -*/
+	// 線分ABを A+tAB とし，tの割合に応じて内分点か判定する
+	CVector ab(lineStartVertex, lineStartVertex->GetNextVertex());
+	CVector ap(lineStartVertex, vertex);
+	CMath calc;
+
+	float t = calc.projectionT(ab, ap);
+
+	// t=0なら始点，t=1なら終点，0<t<1なら内分点となる
+	if (0.0f <= t && t <= 1.0f) return true;
 	return false;
 }
 

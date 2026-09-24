@@ -62,3 +62,15 @@ float CMath::angle(CShape* shape, CVertex* baseVertex) {
     }
     return abs(result);
 }
+
+float CMath::projectionT(CVector a, CVector b) {
+    // 分母となる長さの2乗を計算
+    float length = innerProduct(a, a);
+
+    // 線分の長さが0の場合は 0.0 を返す
+    if (length == 0.0f) {
+        return 0.0f;
+    }
+
+    return innerProduct(a, b) / length;
+}

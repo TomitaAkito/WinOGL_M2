@@ -173,6 +173,14 @@ public:
 	/// <returns>[True]内包している　[false]内包していない</returns>
 	bool isContainsShape();
 
+	/// <summary>
+	/// 頂点が線の内分点であるか判定する
+	/// </summary>
+	/// <param name="vertex">頂点</param>
+	/// <param name="lineStartVertex">線の始点</param>
+	/// <returns>[True]内分点　[False]外分点</returns>
+	bool isInternalDivision(CVertex* vertex, CVertex* lineStartVertex);
+
 #pragma endregion
 
 #pragma region その他
