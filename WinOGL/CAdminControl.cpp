@@ -9,6 +9,11 @@ CAdminControl::CAdminControl() {
 	POINTSIZE = 10;
 	LINEWIDTH = 2.0;
 	AxisFlag = false;
+	EditFlag = false;
+	selectVertex = NULL;
+	selectLineStart = NULL;
+	selectShape = NULL;
+	SELECT_THRESHOLD = 0.05;
 }
 
 
@@ -32,7 +37,10 @@ void CAdminControl::Draw() {
 	}
 
 	// 予測線の描画
-	DrawForecastLine();
+	if(!EditFlag)DrawForecastLine();
+
+	// 選択モードの描画
+	if (EditFlag) DrawSelect();
 }
 
 void CAdminControl::DrawVertex(CVertex* currentV, float R, float G, float B, float size, char mode) {
@@ -109,6 +117,10 @@ void CAdminControl::DrawAxis() {
 	glEnd();
 }
 
+void CAdminControl::DrawSelect() {
+	if (selectVertex) DrawVertex(selectVertex, 1.0, 0.0, 0.0, POINTSIZE, GL_POINTS);
+}
+
 void CAdminControl::SetMouseVertex(float mouse_x, float mouse_y) {
 	mouseVertex->SetVertex(mouse_x, mouse_y);
 }
@@ -141,6 +153,46 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 	newShape->SetPreShape(shape_tail);
 	shape_tail = newShape;
 	return;		
+}
+
+void CAdminControl::Edit(float mouse_x, float mouse_y) {
+	// マウス座標を格納
+	SetMouseVertex(mouse_x, mouse_y);
+	
+	// 図形・点・線の選択
+	Select();
+
+}
+
+bool CAdminControl::Select() {
+	// 点の選択
+	SelectVertex(mouseVertex);
+	// 線の選択
+
+	// 図形の選択
+
+	return true;
+}
+
+void CAdminControl::SelectVertex(CVertex* clickVertex) {
+	// 定数定義
+	CVertex* closedVertex = NULL;
+	float closedDistance = INFINITY;
+	CMath calc;
+
+	for (CShape* currentShape = shape_head; currentShape!=NULL; currentShape = currentShape->GetNextShape()) {
+		for (CVertex* currentVertex = currentShape->GetVertexHead(); currentVertex!=NULL; currentVertex = currentVertex->GetNextVertex()) {
+			// 距離を算出
+			float dis = calc.distanceVertex2Vertex(currentVertex, clickVertex);
+
+			if (dis < closedDistance && dis < SELECT_THRESHOLD) {
+				closedDistance = dis;
+				closedVertex = currentVertex;
+			}
+		}
+	}
+
+	if (closedVertex) selectVertex=closedVertex;
 }
 
 bool CAdminControl::isOtherCrossing(CVertex* newVertex) {

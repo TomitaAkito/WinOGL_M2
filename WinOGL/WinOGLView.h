@@ -73,6 +73,8 @@ public:
 	afx_msg void OnSizedown();
 	afx_msg void OnAxis();
 	afx_msg void OnUpdateAxis(CCmdUI* pCmdUI);
+	afx_msg void OnEdit();
+	afx_msg void OnUpdateEdit(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // WinOGLView.cpp のデバッグ バージョン

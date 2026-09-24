@@ -35,6 +35,8 @@ ON_COMMAND(ID_SIZEUP, &CWinOGLView::OnSizeup)
 ON_COMMAND(ID_SIZEDOWN, &CWinOGLView::OnSizedown)
 ON_COMMAND(ID_AXIS, &CWinOGLView::OnAxis)
 ON_UPDATE_COMMAND_UI(ID_AXIS, &CWinOGLView::OnUpdateAxis)
+ON_COMMAND(ID_EDIT, &CWinOGLView::OnEdit)
+ON_UPDATE_COMMAND_UI(ID_EDIT, &CWinOGLView::OnUpdateEdit)
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -112,7 +114,8 @@ void CWinOGLView::OnLButtonDown(UINT nFlags, CPoint point) {
 	
 	viewingTransformation(point.x, point.y, rect);
 
-	AC.AddVertex(x_Ldown, y_Ldown);
+	if (AC.EditFlag) AC.Edit(x_Ldown, y_Ldown);
+	else AC.AddVertex(x_Ldown, y_Ldown);
 
 	RedrawWindow();
 	CView::OnLButtonDown(nFlags, point);
@@ -235,4 +238,13 @@ void CWinOGLView::OnAxis() {
 
 void CWinOGLView::OnUpdateAxis(CCmdUI* pCmdUI) {
 	pCmdUI->SetCheck(AC.AxisFlag);
+}
+
+void CWinOGLView::OnEdit() {
+	AC.EditFlag = !AC.EditFlag;
+	RedrawWindow();
+}
+
+void CWinOGLView::OnUpdateEdit(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(AC.EditFlag);
 }

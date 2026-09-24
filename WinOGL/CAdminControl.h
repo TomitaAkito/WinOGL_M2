@@ -8,13 +8,18 @@
 class CAdminControl {
 #pragma region 変数
 private:
-	CShape* shape_head;
-	CShape* shape_tail;
-	CVertex* mouseVertex;
-	float POINTSIZE;
-	float LINEWIDTH;
+	CShape* shape_head;			// 図形リストの最初
+	CShape* shape_tail;			// 図形リストの最後
+	CVertex* mouseVertex;		// マウス座標
+	float POINTSIZE;			// 点のサイズ
+	float LINEWIDTH;			// 線の太さ
+	CVertex* selectVertex;		// 選択された頂点
+	CVertex* selectLineStart;	// 選択された線の始点
+	CShape* selectShape;		// 選択された図形
+	float SELECT_THRESHOLD;		// 選択する際の距離の閾値 
 public:
-	bool AxisFlag;
+	bool AxisFlag;				// 座標軸フラグ
+	bool EditFlag;				// 編集フラグ
 
 #pragma endregion
 
@@ -72,6 +77,11 @@ public:
 	/// </summary>
 	void DrawAxis();
 
+	/// <summary>
+	/// 選択したものを描画する
+	/// </summary>
+	void DrawSelect();
+
 #pragma endregion
 
 #pragma region Set
@@ -85,7 +95,7 @@ public:
 #pragma endregion
 
 #pragma region 頂点関係
-
+public:
 	/// <summary>
 	/// 頂点を追加する
 	/// </summary>
@@ -93,6 +103,33 @@ public:
 	/// <param name="mouse_y">マウス：y座標</param>
 	void AddVertex(float mouse_x, float mouse_y);
 #pragma endregion
+
+#pragma region 編集
+public:
+	/// <summary>
+	/// 編集モード
+	/// </summary>
+	/// <param name="mouse_x">マウス：x座標</param>
+	/// <param name="mouse_y">マウス：y座標</param>
+	void Edit(float mouse_x, float mouse_y);
+#pragma endregion
+
+#pragma region 選択
+public:
+	/// <summary>
+	/// 点・線・形状のいずれかを選択
+	/// </summary>
+	/// <returns>[True]選択　[False]選択なし</returns>
+	bool Select();
+
+	/// <summary>
+	/// クリックした箇所の最も近い頂点を取得
+	/// </summary>
+	/// <param name="clickVertex">クリックした箇所</param>
+	void SelectVertex(CVertex* clickVertex);
+
+#pragma endregion
+
 
 #pragma region 判定
 
