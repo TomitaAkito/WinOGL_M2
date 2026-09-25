@@ -120,6 +120,13 @@ void CAdminControl::DrawAxis() {
 void CAdminControl::DrawSelect() {
 	if (selectVertex) DrawVertex(selectVertex, 1.0, 0.0, 0.0, POINTSIZE);
 	else if (selectLineStart) DrawLine(selectLineStart,selectLineStart->GetNextVertex(), 1.0, 0.0, 0.0, LINEWIDTH);
+	else if (selectShape) {
+		for (CVertex* currentVertex = selectShape->GetVertexHead(); currentVertex != NULL; currentVertex = currentVertex->GetNextVertex()) {
+			DrawVertex(currentVertex, 1.0, 0.0, 0.0, POINTSIZE);
+			if (currentVertex->GetNextVertex())
+				DrawLine(currentVertex, currentVertex->GetNextVertex(), 1.0, 0.0, 0.0, LINEWIDTH);
+		}
+	}
 }
 
 void CAdminControl::SetMouseVertex(float mouse_x, float mouse_y) {
@@ -167,15 +174,17 @@ void CAdminControl::Edit(float mouse_x, float mouse_y) {
 
 bool CAdminControl::Select() {
 	// 点の選択
-	//SelectVertex(mouseVertex);
+	//CVertex* selectV = SelectVertex(mouseVertex);
 	// 線の選択
-	SelectLine(mouseVertex);
+	//CVertex* selectLineStart = SelectLine(mouseVertex);
 	// 図形の選択
+	CShape* selectS = SelectShape(mouseVertex);
+	selectShape = selectS;
 
 	return true;
 }
 
-void CAdminControl::SelectVertex(CVertex* clickVertex) {
+CVertex* CAdminControl::SelectVertex(CVertex* clickVertex) {
 	// 定数定義
 	CVertex* closedVertex = NULL;
 	float closedDistance = INFINITY;
@@ -193,10 +202,11 @@ void CAdminControl::SelectVertex(CVertex* clickVertex) {
 		}
 	}
 
-	if (closedVertex) selectVertex=closedVertex;
+	if (closedVertex) return closedVertex;
+	return NULL;
 }
 
-void CAdminControl::SelectLine(CVertex* clickVertex) {
+CVertex* CAdminControl::SelectLine(CVertex* clickVertex) {
 	// 定数定義
 	CVertex* closedLineStartVertex = NULL;
 	float closedDistance = INFINITY;
@@ -214,8 +224,19 @@ void CAdminControl::SelectLine(CVertex* clickVertex) {
 		}
 	}
 
-	if (closedLineStartVertex) selectLineStart = closedLineStartVertex;
+	if (closedLineStartVertex) return closedLineStartVertex;
+	return NULL;
+}
 
+CShape* CAdminControl::SelectShape(CVertex* clickVertex) {
+	// 定数定義
+	CMath calc;
+
+	for (CShape* currentShape = shape_head; currentShape != NULL; currentShape = currentShape->GetNextShape()) {
+		if (isContainsVertexInShape(clickVertex,currentShape)) return currentShape;
+	}
+	
+	return NULL;
 }
 
 bool CAdminControl::isOtherCrossing(CVertex* newVertex) {
@@ -266,15 +287,9 @@ bool CAdminControl::isContainsVertex(CVertex* newVertex) {
 	// 例外判定
 	if (shape_head == shape_tail)return false;
 
-	CMath calc;
-	CShape* newShape = isVertexInShape(newVertex);
-	float angle;
-
 	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
-		angle = calc.angle(currentShape, newVertex);
-
-		if (calc.GetPie() * 2 * 0.9 <= angle && angle <= calc.GetPie() * 2 * 1.1)
-			return true;
+		if (currentShape == shape_tail) continue;
+		if (isContainsVertexInShape(newVertex, currentShape)) return true;
 	}
 	return false;
 }
@@ -283,15 +298,21 @@ bool CAdminControl::isContainsShape() {
 	// 例外処理
 	if(!shape_tail->GetCloseFlag()) return false;
 	
+	for(CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
+		if (currentShape == shape_tail) continue;
+		if (isContainsVertexInShape(currentShape->GetVertexHead(), shape_tail)) return true;
+	}
+	return false;
+}
+
+bool CAdminControl::isContainsVertexInShape(CVertex* clickVertex, CShape* serchShape) {
 	CMath calc;
 	float angle;
 
-	for(CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
-		angle = calc.angle(shape_tail, currentShape->GetVertexHead());
+	angle = calc.angle(serchShape, clickVertex);
 
-		if(calc.GetPie() * 2 * 0.9 <= angle && angle <= calc.GetPie() * 2 * 1.1)
-			return true;
-	}
+	if (calc.GetPie() * 2 * 0.99 <= angle && angle <= calc.GetPie() * 2 * 1.01) return true;
+
 	return false;
 }
 

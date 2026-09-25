@@ -124,14 +124,16 @@ public:
 	/// クリックした箇所から最も近い頂点を取得
 	/// </summary>
 	/// <param name="clickVertex">クリックした箇所</param>
-	void SelectVertex(CVertex* clickVertex);
+	CVertex* SelectVertex(CVertex* clickVertex);
 
 	/// <summary>
 	/// クリックした箇所から最も近い線を取得
 	/// </summary>
 	/// <param name="clickVertex">クリックした箇所</param>
-	void SelectLine(CVertex* clickVertex);
+	CVertex* SelectLine(CVertex* clickVertex);
 
+
+	CShape* SelectShape(CVertex* clickVertex);
 #pragma endregion
 
 
@@ -172,6 +174,14 @@ public:
 	/// </summary>
 	/// <returns>[True]内包している　[false]内包していない</returns>
 	bool isContainsShape();
+
+	/// <summary>
+	/// 引数の頂点が探索図形に内包されているか判定する
+	/// </summary>
+	/// <param name="clickVertex">頂点</param>
+	/// <param name="serchShape">探索図形</param>
+	/// <returns>[True]内包されている　[false]内包されていない</returns>
+	bool isContainsVertexInShape(CVertex* clickVertex, CShape* serchShape);
 
 	/// <summary>
 	/// 頂点が線の内分点であるか判定する
