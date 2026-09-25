@@ -13,7 +13,7 @@ CAdminControl::CAdminControl() {
 	selectVertex = NULL;
 	selectLineStart = NULL;
 	selectShape = NULL;
-	SELECT_THRESHOLD = 0.1;
+	SELECT_THRESHOLD = 0.03;
 }
 
 
@@ -172,16 +172,36 @@ void CAdminControl::Edit(float mouse_x, float mouse_y) {
 
 }
 
+void CAdminControl::EditReset() {
+	selectVertex = NULL;
+	selectLineStart = NULL;
+	selectShape = NULL;
+}
+
 bool CAdminControl::Select() {
+	EditReset();
 	// 点の選択
-	//CVertex* selectV = SelectVertex(mouseVertex);
+	CVertex* selectV = SelectVertex(mouseVertex);
+	if (selectV) {
+		selectVertex = selectV;
+		return true;
+	}
+
 	// 線の選択
-	//CVertex* selectLineStart = SelectLine(mouseVertex);
+	CVertex* selectLineStartV = SelectLine(mouseVertex);
+	if (selectLineStartV) {
+		selectLineStart = selectLineStartV;
+		return true;
+	}
+
 	// 図形の選択
 	CShape* selectS = SelectShape(mouseVertex);
-	selectShape = selectS;
+	if (selectS) {
+		selectShape = selectS;
+		return true;
+	}
 
-	return true;
+	return false;
 }
 
 CVertex* CAdminControl::SelectVertex(CVertex* clickVertex) {

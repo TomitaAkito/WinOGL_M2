@@ -110,6 +110,11 @@ public:
 	/// <param name="mouse_x">マウス：x座標</param>
 	/// <param name="mouse_y">マウス：y座標</param>
 	void Edit(float mouse_x, float mouse_y);
+
+	/// <summary>
+	/// 編集モードをリセットする
+	/// </summary>
+	void EditReset();
 #pragma endregion
 
 #pragma region 選択
@@ -124,15 +129,21 @@ public:
 	/// クリックした箇所から最も近い頂点を取得
 	/// </summary>
 	/// <param name="clickVertex">クリックした箇所</param>
+	/// <returns>該当する頂点 or NULL</returns>
 	CVertex* SelectVertex(CVertex* clickVertex);
 
 	/// <summary>
 	/// クリックした箇所から最も近い線を取得
 	/// </summary>
 	/// <param name="clickVertex">クリックした箇所</param>
+	/// <returns>該当する頂点 or NULL</returns>
 	CVertex* SelectLine(CVertex* clickVertex);
 
-
+	/// <summary>
+	/// クリックした箇所が図形を選択していたら該当図形を取得
+	/// </summary>
+	/// <param name="clickVertex">クリックした箇所</param>
+	/// <returns>該当図形 or NULL</returns>
 	CShape* SelectShape(CVertex* clickVertex);
 #pragma endregion
 
