@@ -129,6 +129,7 @@ public:
 	/// <param name="mouse_x">マウス：x座標</param>
 	/// <param name="mouse_y">マウス：y座標</param>
 	void MoveVertex(float mouse_x, float mouse_y);
+
 #pragma endregion
 
 #pragma region 選択
@@ -199,6 +200,12 @@ public:
 	/// </summary>
 	/// <returns>[True]内包している　[false]内包していない</returns>
 	bool isContainsShape();
+
+	/// <summary>
+	/// 図形を移動させた際に他の図形を内包していないか判定する
+	/// </summary>
+	/// <returns>[True]内包している　[false]内包していない</returns>
+	bool isContainsShapeByMoving();
 
 	/// <summary>
 	/// 引数の頂点が探索図形に内包されているか判定する

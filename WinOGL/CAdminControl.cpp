@@ -206,7 +206,8 @@ void CAdminControl::MoveVertex(float mouse_x, float mouse_y) {
 		ErrFlag = true;
 
 	//// 内包判定
-	//if (isContains(newVertex))	shape_tail->freeVertex(newVertex);
+	if (isContainsShapeByMoving())
+		ErrFlag = true;
 
 	// 問題があった場合
 	if (ErrFlag) {
@@ -360,6 +361,24 @@ bool CAdminControl::isContainsShape() {
 	for(CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
 		if (currentShape == shape_tail) continue;
 		if (isContainsVertexInShape(currentShape->GetVertexHead(), shape_tail)) return true;
+	}
+	return false;
+}
+
+bool CAdminControl::isContainsShapeByMoving() {
+
+	CShape* selectS = isVertexInShape(selectVertex);
+
+	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
+		//if (currentShape == selectS) continue;
+
+		for (CVertex* currentVertex = currentShape->GetVertexHead();currentVertex != NULL;currentVertex = currentVertex->GetNextVertex()) {
+			for (CShape* searchShape = shape_head;searchShape != NULL;searchShape = searchShape->GetNextShape()) {
+				if (currentShape == searchShape)continue;
+				if (isContainsVertexInShape(currentVertex, searchShape)) return true;
+			}
+		}
+		
 	}
 	return false;
 }
