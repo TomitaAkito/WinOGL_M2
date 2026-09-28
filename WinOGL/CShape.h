@@ -113,6 +113,12 @@ public:
 	/// <returns>[True]自交差する　[False]自交差しない</returns>
 	bool IsSelfCrossing_SandglassType();
 
+	/// <summary>
+	/// 移動した際に自交差するか判定する
+	/// </summary>
+	/// <param name="selectVertex">変更する座標</param>
+	/// <returns>[True]自交差する　[False]自交差しない</returns>
+	bool IsSelfCrossingByMoving(CVertex* selectVertex);
 
 	/// <summary>
 	/// 4つの頂点からなる線分が交差するか判定する

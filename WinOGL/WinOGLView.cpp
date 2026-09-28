@@ -37,6 +37,7 @@ ON_COMMAND(ID_AXIS, &CWinOGLView::OnAxis)
 ON_UPDATE_COMMAND_UI(ID_AXIS, &CWinOGLView::OnUpdateAxis)
 ON_COMMAND(ID_EDIT, &CWinOGLView::OnEdit)
 ON_UPDATE_COMMAND_UI(ID_EDIT, &CWinOGLView::OnUpdateEdit)
+ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -111,6 +112,7 @@ void CWinOGLView::OnLButtonDown(UINT nFlags, CPoint point) {
 	// 描画領域の大きさを取得
 	CRect rect;
 	GetClientRect(rect);
+	LButtonDownFlag = true;
 	
 	viewingTransformation(point.x, point.y, rect);
 
@@ -217,6 +219,9 @@ void CWinOGLView::OnMouseMove(UINT nFlags, CPoint point) {
 	viewingTransformation(point.x, point.y, rect);
 
 	AC.SetMouseVertex(x_Ldown, y_Ldown);
+
+	if (AC.EditFlag && LButtonDownFlag) AC.Move(x_Ldown,y_Ldown);
+
 	RedrawWindow();
 	CView::OnMouseMove(nFlags, point);
 }
@@ -247,4 +252,10 @@ void CWinOGLView::OnEdit() {
 
 void CWinOGLView::OnUpdateEdit(CCmdUI* pCmdUI) {
 	pCmdUI->SetCheck(AC.EditFlag);
+}
+
+void CWinOGLView::OnLButtonUp(UINT nFlags, CPoint point) {
+	LButtonDownFlag = false;
+
+	CView::OnLButtonUp(nFlags, point);
 }

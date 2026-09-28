@@ -115,6 +115,20 @@ public:
 	/// 編集モードをリセットする
 	/// </summary>
 	void EditReset();
+
+	/// <summary>
+	/// 選択されたものを移動させる
+	/// </summary>
+	/// <param name="mouse_x">マウス：x座標</param>
+	/// <param name="mouse_y">マウス：y座標</param>
+	void Move(float mouse_x, float mouse_y);
+
+	/// <summary>
+	/// 選択された頂点を移動させる
+	/// </summary>
+	/// <param name="mouse_x">マウス：x座標</param>
+	/// <param name="mouse_y">マウス：y座標</param>
+	void MoveVertex(float mouse_x, float mouse_y);
 #pragma endregion
 
 #pragma region 選択

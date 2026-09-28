@@ -175,6 +175,66 @@ bool CShape::IsSelfCrossing_SandglassType() {
 	return false;
 }
 
+//bool CShape::IsSelfCrossingByMoving(CVertex* selectVertex) {
+//	// 例外処理
+//	if (vertex_count < 3) return false;
+//
+//	for (CVertex* currentV = vertex_head; currentV != NULL; currentV = currentV->GetNextVertex()) {
+//
+//		if (!currentV->GetNextVertex())
+//			return false;
+//
+//		if(selectVertex->GetNextVertex() && IsCrossing2Lines(currentV, currentV->GetNextVertex(), selectVertex, selectVertex->GetNextVertex()))
+//			return true;
+//
+//		if (selectVertex->GetPreVertex() && IsCrossing2Lines(currentV, currentV->GetNextVertex(), selectVertex->GetPreVertex(), selectVertex))
+//			return true;
+//	}
+//
+//	return false;
+//}
+
+bool CShape::IsSelfCrossingByMoving(CVertex* selectVertex) {
+	// 例外処理
+	if (vertex_count < 3) return false;
+
+	// 図形が閉じており，vertex_headを選んでいる場合はpreはtailの前にする
+	CVertex* preV = selectVertex->GetPreVertex();
+	if (!preV && this->close_flag && isVertexCoordinate(selectVertex, vertex_head))
+		preV = vertex_tail->GetPreVertex();
+	CVertex* nextV = selectVertex->GetNextVertex();
+
+	for (CVertex* currentV = vertex_head; currentV != NULL; currentV = currentV->GetNextVertex()) {
+
+		CVertex* currentNextV = currentV->GetNextVertex();
+		if (!currentNextV) break;
+
+		// 選択した頂点->next
+		if (nextV) {
+			bool isSharedNodeNext = (
+							isVertexCoordinate(selectVertex, currentV) ||
+							isVertexCoordinate(selectVertex, currentNextV) ||
+							isVertexCoordinate(nextV, currentV) ||
+							isVertexCoordinate(nextV, currentNextV));
+
+			if (!isSharedNodeNext && IsCrossing2Lines(currentV, currentNextV, selectVertex, nextV)) return true;
+		}
+
+		// 選択した頂点->pre
+		if (preV) {
+			bool isSharedNodePre = (
+							isVertexCoordinate(preV, currentV) ||
+							isVertexCoordinate(preV, currentNextV) ||
+							isVertexCoordinate(selectVertex, currentV) ||
+							isVertexCoordinate(selectVertex, currentNextV));
+
+			if (!isSharedNodePre && IsCrossing2Lines(currentV, currentNextV, preV, selectVertex)) return true;
+		}
+	}
+
+	return false;
+}
+
 bool CShape::IsCrossing2Lines(CVertex* As, CVertex* Ae, CVertex* Bs, CVertex* Be) {
 	// 例外処理
 	if (!As || !Ae || !Bs || !Be) return false;

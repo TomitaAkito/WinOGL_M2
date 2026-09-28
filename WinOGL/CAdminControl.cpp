@@ -65,7 +65,7 @@ void CAdminControl::DrawForecastLine() {
 	// 例外処理
 	if (!shape_head || !shape_tail) return;
 	if (!shape_tail->GetVertexHead()) return;
-
+	if (shape_tail->GetCloseFlag())return;
 	
 	// 自交差判定
 	bool drawFlag = shape_tail->IsSelfCrossing(mouseVertex);
@@ -142,6 +142,13 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 		shape_head = shape;
 		shape_tail = shape;
 	}
+	else if (shape_tail->GetCloseFlag()) {
+		// 図形が閉じている場合は新しい図形を設ける
+		CShape* newShape = new CShape();
+		shape_tail->SetNextShape(newShape);
+		newShape->SetPreShape(shape_tail);
+		shape_tail = newShape;
+	}
 
 	// 自交差判定込みでshape_tailにくっつける
 	if (!shape_tail->AddVertex(newVertex)) return;
@@ -151,15 +158,6 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 
 	// 内包判定
 	if(isContains(newVertex))	shape_tail->freeVertex(newVertex);
-
-	// 図形を閉じない場合は終了
-	if (!shape_tail->GetCloseFlag()) return;
-
-	// 今回の処理で図形が閉じた場合は新しい図形を設ける
-	CShape* newShape = new CShape();
-	shape_tail->SetNextShape(newShape);
-	newShape->SetPreShape(shape_tail);
-	shape_tail = newShape;
 	return;		
 }
 
@@ -176,6 +174,50 @@ void CAdminControl::EditReset() {
 	selectVertex = NULL;
 	selectLineStart = NULL;
 	selectShape = NULL;
+}
+
+void CAdminControl::Move(float mouse_x, float mouse_y) {
+	// いずれも選んでなければ無視する
+	if (!selectVertex && !selectLineStart && !selectShape)return;
+
+	if (selectVertex)MoveVertex(mouse_x, mouse_y);
+
+}
+
+void CAdminControl::MoveVertex(float mouse_x, float mouse_y) {
+	// 図形を取得
+	CShape* selectS = isVertexInShape(selectVertex);
+	
+	// 前の頂点を保持
+	float beforeX = selectVertex->GetX();
+	float beforeY = selectVertex->GetY();
+
+	// 一旦動かす
+	selectVertex->SetVertex(mouse_x, mouse_y);
+
+	// もしvertex_headを選んでいたら，vertex_tailも移動させる
+	if (selectS->isVertexCoordinate(selectVertex, selectS->GetVertexHead()))
+		selectS->GetVertexTail()->SetVertex(mouse_x, mouse_y);
+
+	bool ErrFlag = false;
+
+	// 自交差判定
+	if (selectS->IsSelfCrossingByMoving(selectVertex))
+		ErrFlag = true;
+
+	//// 他交差判定
+	//if (isOtherCrossing(newVertex)) shape_tail->freeVertex(newVertex);
+
+	//// 内包判定
+	//if (isContains(newVertex))	shape_tail->freeVertex(newVertex);
+
+	// 問題があった場合
+	if (ErrFlag) {
+		selectVertex->SetVertex(beforeX, beforeY);
+		if (selectS->isVertexCoordinate(selectVertex, selectS->GetVertexHead()))
+			selectS->GetVertexTail()->SetVertex(beforeX, beforeY);
+	}
+	
 }
 
 bool CAdminControl::Select() {
@@ -262,7 +304,7 @@ CShape* CAdminControl::SelectShape(CVertex* clickVertex) {
 bool CAdminControl::isOtherCrossing(CVertex* newVertex) {
 	// 例外処理
 	if (!shape_head->GetNextShape())return false;
-	//CShape* newShape = isVertexInShape(newVertex);
+	CShape* newShape = isVertexInShape(newVertex);
 	if (shape_tail->GetVertex_count() <= 1) return false;
 
 	CShape* newVertexShape = shape_tail;
@@ -273,7 +315,7 @@ bool CAdminControl::isOtherCrossing(CVertex* newVertex) {
 		if (currentShape == newVertexShape) continue;
 
 		for (CVertex* currentVertex = currentShape->GetVertexHead(); currentVertex != NULL; currentVertex = currentVertex->GetNextVertex()) {
-			if (currentShape->IsCrossing2Lines(currentVertex, currentVertex->GetNextVertex(), shape_tail->GetVertexTail()->GetPreVertex(), newVertex))
+			if (currentShape->IsCrossing2Lines(currentVertex, currentVertex->GetNextVertex(), newShape->GetVertexTail()->GetPreVertex(), newVertex))
 				return true;
 		}
 	}
