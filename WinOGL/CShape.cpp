@@ -194,41 +194,46 @@ bool CShape::IsSelfCrossing_SandglassType() {
 //	return false;
 //}
 
-bool CShape::IsSelfCrossingByMoving(CVertex* selectVertex) {
+bool CShape::IsSelfCrossingByMoving(CVertex* selectVertex, CShape* shape_head) {
 	// 例外処理
-	if (vertex_count < 3) return false;
+	if (vertex_count < 2) return false;
 
-	// 図形が閉じており，vertex_headを選んでいる場合はpreはtailの前にする
+	// 図形が閉じており，headかtailを選んでいる場合も取得
 	CVertex* preV = selectVertex->GetPreVertex();
-	if (!preV && this->close_flag && isVertexCoordinate(selectVertex, vertex_head))
+	if (!preV && close_flag && isVertexCoordinate(selectVertex, vertex_head))
 		preV = vertex_tail->GetPreVertex();
+
 	CVertex* nextV = selectVertex->GetNextVertex();
+	if (!nextV && close_flag && isVertexCoordinate(selectVertex, vertex_tail))
+		nextV = vertex_head->GetNextVertex();
 
-	for (CVertex* currentV = vertex_head; currentV != NULL; currentV = currentV->GetNextVertex()) {
+	for (CShape* currentS = shape_head; currentS != NULL; currentS = currentS->GetNextShape()) {
+		for (CVertex* currentV = currentS->GetVertexHead(); currentV != NULL; currentV = currentV->GetNextVertex()) {
 
-		CVertex* currentNextV = currentV->GetNextVertex();
-		if (!currentNextV) break;
+			CVertex* currentNextV = currentV->GetNextVertex();
+			if (!currentNextV) break;
 
-		// 選択した頂点->next
-		if (nextV) {
-			bool isSharedNodeNext = (
-							isVertexCoordinate(selectVertex, currentV) ||
-							isVertexCoordinate(selectVertex, currentNextV) ||
-							isVertexCoordinate(nextV, currentV) ||
-							isVertexCoordinate(nextV, currentNextV));
+			// 選択した頂点 -> next
+			if (nextV) {
+				bool isSharedNodeNext = (
+					isVertexCoordinate(selectVertex, currentV) ||
+					isVertexCoordinate(selectVertex, currentNextV) ||
+					isVertexCoordinate(nextV, currentV) ||
+					isVertexCoordinate(nextV, currentNextV));
 
-			if (!isSharedNodeNext && IsCrossing2Lines(currentV, currentNextV, selectVertex, nextV)) return true;
-		}
+				if (!isSharedNodeNext && IsCrossing2Lines(currentV, currentNextV, selectVertex, nextV)) return true;
+			}
 
-		// 選択した頂点->pre
-		if (preV) {
-			bool isSharedNodePre = (
-							isVertexCoordinate(preV, currentV) ||
-							isVertexCoordinate(preV, currentNextV) ||
-							isVertexCoordinate(selectVertex, currentV) ||
-							isVertexCoordinate(selectVertex, currentNextV));
+			// preV -> 選択した頂点
+			if (preV) {
+				bool isSharedNodePre = (
+					isVertexCoordinate(preV, currentV) ||
+					isVertexCoordinate(preV, currentNextV) ||
+					isVertexCoordinate(selectVertex, currentV) ||
+					isVertexCoordinate(selectVertex, currentNextV));
 
-			if (!isSharedNodePre && IsCrossing2Lines(currentV, currentNextV, preV, selectVertex)) return true;
+				if (!isSharedNodePre && IsCrossing2Lines(currentV, currentNextV, preV, selectVertex)) return true;
+			}
 		}
 	}
 

@@ -201,12 +201,9 @@ void CAdminControl::MoveVertex(float mouse_x, float mouse_y) {
 
 	bool ErrFlag = false;
 
-	// 自交差判定
-	if (selectS->IsSelfCrossingByMoving(selectVertex))
+	// 交差判定(自/他)
+	if (selectS->IsSelfCrossingByMoving(selectVertex,shape_head))
 		ErrFlag = true;
-
-	//// 他交差判定
-	//if (isOtherCrossing(newVertex)) shape_tail->freeVertex(newVertex);
 
 	//// 内包判定
 	//if (isContains(newVertex))	shape_tail->freeVertex(newVertex);

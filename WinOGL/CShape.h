@@ -118,7 +118,7 @@ public:
 	/// </summary>
 	/// <param name="selectVertex">変更する座標</param>
 	/// <returns>[True]自交差する　[False]自交差しない</returns>
-	bool IsSelfCrossingByMoving(CVertex* selectVertex);
+	bool IsSelfCrossingByMoving(CVertex* selectVertex,CShape* shape_head);
 
 	/// <summary>
 	/// 4つの頂点からなる線分が交差するか判定する
