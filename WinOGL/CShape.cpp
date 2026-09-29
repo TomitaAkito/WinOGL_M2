@@ -143,6 +143,15 @@ bool CShape::freeVertex(CVertex* deleteVertex) {
 	return false;
 }
 
+bool CShape::InsertVertex(CVertex* newVertex, CVertex* preVertex) {
+	newVertex->SetNextVertex(preVertex->GetNextVertex());
+	preVertex->SetNextVertex(newVertex);
+
+	newVertex->GetNextVertex()->SetPreVertex(newVertex);
+	newVertex->SetPreVertex(preVertex);
+	return true;
+}
+
 bool CShape::IsSelfCrossing(CVertex* newVertex) {
 	// 例外処理
 	if (vertex_count < 3) return false;

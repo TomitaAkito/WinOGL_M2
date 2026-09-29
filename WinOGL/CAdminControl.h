@@ -17,6 +17,7 @@ private:
 	CVertex* selectLineStart;	// 選択された線の始点
 	CShape* selectShape;		// 選択された図形
 	float SELECT_THRESHOLD;		// 選択する際の距離の閾値 
+	int selectCount;
 public:
 	bool AxisFlag;				// 座標軸フラグ
 	bool EditFlag;				// 編集フラグ
@@ -129,6 +130,11 @@ public:
 	/// <param name="mouse_x">マウス：x座標</param>
 	/// <param name="mouse_y">マウス：y座標</param>
 	void MoveVertex(float mouse_x, float mouse_y);
+
+	/// <summary>
+	/// 選択された線に頂点を挿入する
+	/// </summary>
+	void InsertVertex();
 
 #pragma endregion
 

@@ -14,6 +14,7 @@ CAdminControl::CAdminControl() {
 	selectLineStart = NULL;
 	selectShape = NULL;
 	SELECT_THRESHOLD = 0.03;
+	selectCount = 0;
 }
 
 
@@ -174,6 +175,7 @@ void CAdminControl::EditReset() {
 	selectVertex = NULL;
 	selectLineStart = NULL;
 	selectShape = NULL;
+	selectCount = 1;
 }
 
 void CAdminControl::Move(float mouse_x, float mouse_y) {
@@ -181,7 +183,6 @@ void CAdminControl::Move(float mouse_x, float mouse_y) {
 	if (!selectVertex && !selectLineStart && !selectShape)return;
 
 	if (selectVertex)MoveVertex(mouse_x, mouse_y);
-
 }
 
 void CAdminControl::MoveVertex(float mouse_x, float mouse_y) {
@@ -218,28 +219,61 @@ void CAdminControl::MoveVertex(float mouse_x, float mouse_y) {
 	
 }
 
-bool CAdminControl::Select() {
+void CAdminControl::InsertVertex() {
+
+	CVector ab(selectLineStart, selectLineStart->GetNextVertex());
+	CVector ap(selectLineStart, mouseVertex);
+	CMath calc;
+
+	float t = calc.projectionT(ab, ap);
+	float newX = selectLineStart->GetX() + (selectLineStart->GetNextVertex()->GetX() - selectLineStart->GetX()) * t;
+	float newY = selectLineStart->GetY() + (selectLineStart->GetNextVertex()->GetY() - selectLineStart->GetY()) * t;
+	CVertex* newVertex = new CVertex(newX, newY);
+
+	isVertexInShape(selectLineStart)->InsertVertex(newVertex, selectLineStart);
 	EditReset();
+	selectVertex = newVertex;
+	selectCount++;
+}
+
+bool CAdminControl::Select() {
+	//EditReset();
 	// 点の選択
 	CVertex* selectV = SelectVertex(mouseVertex);
 	if (selectV) {
-		selectVertex = selectV;
+		if(selectV != selectVertex) {
+			EditReset();
+			selectVertex = selectV;
+		}
+		else selectCount++;
 		return true;
 	}
 
 	// 線の選択
 	CVertex* selectLineStartV = SelectLine(mouseVertex);
 	if (selectLineStartV) {
-		selectLineStart = selectLineStartV;
+		if(selectLineStart != selectLineStartV) {
+			EditReset();
+			selectLineStart = selectLineStartV;
+		}
+		else selectCount++;
+
+		if(selectCount > 1)InsertVertex();
 		return true;
 	}
 
 	// 図形の選択
 	CShape* selectS = SelectShape(mouseVertex);
 	if (selectS) {
-		selectShape = selectS;
+		if(selectS != selectShape) {
+			EditReset();
+			selectShape = selectS;
+		}
+		else selectCount++;
 		return true;
 	}
+
+	if(selectLineStart)InsertVertex();
 
 	return false;
 }

@@ -95,6 +95,14 @@ public:
 	/// <returns>[True]削除完了　[False]削除不可</returns>
 	bool freeVertex(CVertex* deleteVertex);
 
+	/// <summary>
+	/// 頂点をpreVertexの次に挿入する
+	/// </summary>
+	/// <param name="newVertex">新しい頂点</param>
+	/// <param name="preVertex">挿入する頂点の前の座標</param>
+	/// <returns>[True]終了 [False]失敗</returns>
+	bool InsertVertex(CVertex* newVertex, CVertex* preVertex);
+
 #pragma endregion
 
 #pragma region 判定
