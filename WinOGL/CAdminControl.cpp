@@ -77,11 +77,8 @@ void CAdminControl::DrawForecastLine() {
 		CVertex* tmpVertex = new CVertex(mouseVertex->GetX(), mouseVertex->GetY());
 		shape_tail->AddVertex(tmpVertex);
 
-		// 他交差判定
-		drawFlag = isOtherCrossing(tmpVertex);
-
-		// 内包判定
-		if(!drawFlag) drawFlag = isContains(tmpVertex);
+		// 他交差判定 & 内包判定
+		drawFlag = (isOtherCrossing(tmpVertex)||isContains(tmpVertex));
 
 		// 仮の頂点を削除
 		if (!shape_tail->GetCloseFlag())shape_tail->freeVertex(tmpVertex);
@@ -119,8 +116,11 @@ void CAdminControl::DrawAxis() {
 }
 
 void CAdminControl::DrawSelect() {
+	// 頂点選択時
 	if (selectVertex) DrawVertex(selectVertex, 1.0, 0.0, 0.0, POINTSIZE);
+	// 線選択時
 	else if (selectLineStart) DrawLine(selectLineStart,selectLineStart->GetNextVertex(), 1.0, 0.0, 0.0, LINEWIDTH);
+	// 図形選択時
 	else if (selectShape) {
 		for (CVertex* currentVertex = selectShape->GetVertexHead(); currentVertex != NULL; currentVertex = currentVertex->GetNextVertex()) {
 			DrawVertex(currentVertex, 1.0, 0.0, 0.0, POINTSIZE);
@@ -182,6 +182,9 @@ void CAdminControl::Move(float mouse_x, float mouse_y) {
 	// いずれも選んでなければ無視する
 	if (!selectVertex && !selectLineStart && !selectShape)return;
 
+	// 選択回数が満たさない場合はbreak
+	if (selectCount < 2) return;
+
 	if (selectVertex)MoveVertex(mouse_x, mouse_y);
 }
 
@@ -200,23 +203,13 @@ void CAdminControl::MoveVertex(float mouse_x, float mouse_y) {
 	if (selectS->isVertexCoordinate(selectVertex, selectS->GetVertexHead()))
 		selectS->GetVertexTail()->SetVertex(mouse_x, mouse_y);
 
-	bool ErrFlag = false;
-
-	// 交差判定(自/他)
-	if (selectS->IsSelfCrossingByMoving(selectVertex,shape_head))
-		ErrFlag = true;
-
-	//// 内包判定
-	if (isContainsShapeByMoving())
-		ErrFlag = true;
-
-	// 問題があった場合
-	if (ErrFlag) {
+	// 問題があった場合は図形を戻す
+	// ->交差判定と内包判定
+	if (selectS->IsSelfCrossingByMoving(selectVertex, shape_head) || isContainsShapeByMoving()) {
 		selectVertex->SetVertex(beforeX, beforeY);
 		if (selectS->isVertexCoordinate(selectVertex, selectS->GetVertexHead()))
 			selectS->GetVertexTail()->SetVertex(beforeX, beforeY);
-	}
-	
+	}	
 }
 
 void CAdminControl::InsertVertex() {
@@ -226,6 +219,13 @@ void CAdminControl::InsertVertex() {
 	CMath calc;
 
 	float t = calc.projectionT(ab, ap);
+	
+	// 端的と重なる場合はbreak
+	if (t == 0 || t == 1) {
+		EditReset();
+		return;
+	}
+
 	float newX = selectLineStart->GetX() + (selectLineStart->GetNextVertex()->GetX() - selectLineStart->GetX()) * t;
 	float newY = selectLineStart->GetY() + (selectLineStart->GetNextVertex()->GetY() - selectLineStart->GetY()) * t;
 	CVertex* newVertex = new CVertex(newX, newY);
@@ -246,20 +246,22 @@ bool CAdminControl::freeVertex(CVertex* DeleteV) {
 
 	// 最新の図形が消える場合
 	if (selectS->GetVertex_count() == 1) {
-		shape_tail = shape_tail->GetPreShape();
+		CShape* tmpShape = shape_tail->GetPreShape();
+		delete shape_tail;
+		shape_tail = tmpShape;
 		if (shape_tail == NULL) shape_head = NULL;
+		return true;
 	}
+	
 	// vertex_headとvertex_tailを消す場合
-	else if (selectS->GetCloseFlag() && selectS->isVertexCoordinate(selectS->GetVertexHead(), DeleteV)) {
+	if (selectS->GetCloseFlag() && selectS->isVertexCoordinate(selectS->GetVertexHead(), DeleteV))
 		headTailFlag = true;
-	}
-
+	
 	selectS->freeVertex(DeleteV);
-	//selectS->SetCloseFlag(true);
+	selectS->SetCloseFlag(true);
 
 	if (headTailFlag) 
 		selectS->GetVertexTail()->SetVertex(selectS->GetVertexHead()->GetX(), selectS->GetVertexHead()->GetY());
-
 
 	return true;
 }
@@ -276,7 +278,8 @@ void CAdminControl::DeleteVertex() {
 
 	// 頂点がvertex_headを選択しているか
 	bool headTailFlag = false;
-	if (selectS->GetCloseFlag() && selectS->isVertexCoordinate(selectS->GetVertexHead(), selectVertex)) headTailFlag = true;
+	if (selectS->GetCloseFlag() && selectS->isVertexCoordinate(selectS->GetVertexHead(), selectVertex))
+		headTailFlag = true;
 	
 	// 問題判定用フラグ
 	bool ErrFlag = false;
@@ -337,8 +340,7 @@ bool CAdminControl::Select() {
 		return true;
 	}
 
-	if(selectLineStart)InsertVertex();
-
+	EditReset();
 	return false;
 }
 

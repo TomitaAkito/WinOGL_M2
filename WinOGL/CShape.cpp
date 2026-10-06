@@ -150,19 +150,17 @@ bool CShape::freeVertex(CVertex* deleteVertex) {
 bool CShape::InsertVertex(CVertex* newVertex, CVertex* preVertex) {
 	if (!newVertex) return false;
 
+	// 前がない = vertex_tailの前にvertexを挿入
 	if (!preVertex) {
-		newVertex->SetNextVertex(this->vertex_head);
-		newVertex->SetPreVertex(nullptr);
+		newVertex->SetNextVertex(vertex_head);
+		newVertex->SetPreVertex(NULL);
 
-		if (this->vertex_head) {
-			this->vertex_head->SetPreVertex(newVertex);
-		}
-		else {
-			// 頂点が1つもない状態から追加した場合は、Tailにもなる
-			this->vertex_tail = newVertex;
-		}
-		this->vertex_head = newVertex;
+		if (vertex_head) vertex_head->SetPreVertex(newVertex);
+		else vertex_tail = newVertex;
+
+		vertex_head = newVertex;
 	}
+	// 通常の挿入
 	else {
 		newVertex->SetNextVertex(preVertex->GetNextVertex());
 		newVertex->SetPreVertex(preVertex);
@@ -170,7 +168,7 @@ bool CShape::InsertVertex(CVertex* newVertex, CVertex* preVertex) {
 		preVertex->SetNextVertex(newVertex);
 
 		if (newVertex->GetNextVertex()) newVertex->GetNextVertex()->SetPreVertex(newVertex);
-		else this->vertex_tail = newVertex;
+		else vertex_tail = newVertex;
 	}
 
 	vertex_count++;
