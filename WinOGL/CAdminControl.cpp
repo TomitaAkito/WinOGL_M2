@@ -236,6 +236,70 @@ void CAdminControl::InsertVertex() {
 	selectCount++;
 }
 
+bool CAdminControl::freeVertex(CVertex* DeleteV) {
+	// 例外処理
+	if (!DeleteV)return false;
+	CShape* selectS = isVertexInShape(DeleteV);
+	if (selectS->GetCloseFlag() && selectS->GetVertex_count() <= 3) return false;
+
+	bool headTailFlag = false;
+
+	// 最新の図形が消える場合
+	if (selectS->GetVertex_count() == 1) {
+		shape_tail = shape_tail->GetPreShape();
+		if (shape_tail == NULL) shape_head = NULL;
+	}
+	// vertex_headとvertex_tailを消す場合
+	else if (selectS->GetCloseFlag() && selectS->isVertexCoordinate(selectS->GetVertexHead(), DeleteV)) {
+		headTailFlag = true;
+	}
+
+	selectS->freeVertex(DeleteV);
+	//selectS->SetCloseFlag(true);
+
+	if (headTailFlag) 
+		selectS->GetVertexTail()->SetVertex(selectS->GetVertexHead()->GetX(), selectS->GetVertexHead()->GetY());
+
+
+	return true;
+}
+
+void CAdminControl::DeleteVertex() {
+	// 例外処理
+	if (!selectVertex) return;
+	CShape* selectS = isVertexInShape(selectVertex);
+	if (selectS->GetCloseFlag() && selectS->GetVertex_count() <= 4) return;
+
+	// 無理だった時用
+	CVertex* originV = new CVertex(selectVertex);
+	CVertex* originalV_Pre = selectVertex->GetPreVertex();
+
+	// 頂点がvertex_headを選択しているか
+	bool headTailFlag = false;
+	if (selectS->GetCloseFlag() && selectS->isVertexCoordinate(selectS->GetVertexHead(), selectVertex)) headTailFlag = true;
+	
+	// 問題判定用フラグ
+	bool ErrFlag = false;
+
+	// 削除
+	freeVertex(selectVertex);
+
+	// 交差判定
+
+
+	// 内包判定
+
+
+	// 問題があった場合戻す
+	if (ErrFlag) {
+		selectS->InsertVertex(originV, originalV_Pre);
+		if (headTailFlag)selectS->GetVertexTail()->SetVertex(selectS->GetVertexHead()->GetX(), selectS->GetVertexHead()->GetY());
+
+	}
+	EditReset();
+
+}
+
 bool CAdminControl::Select() {
 	//EditReset();
 	// 点の選択

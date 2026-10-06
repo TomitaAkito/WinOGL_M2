@@ -23,6 +23,10 @@ void CShape::SetPreShape(CShape* preShape) {
 	pre = preShape;
 }
 
+void CShape::SetCloseFlag(bool flag) {
+	close_flag = flag;
+}
+
 CVertex* CShape::GetVertexHead() {
 	return vertex_head;
 }
@@ -97,7 +101,7 @@ bool CShape::AddVertex(CVertex* newVertex) {
 bool CShape::freeVertex(CVertex* deleteVertex) {
 
 	for (CVertex* currentVertex = vertex_tail; currentVertex != NULL; currentVertex = currentVertex->GetPreVertex()) {
-		if (isVertexCoordinate(currentVertex, deleteVertex)) {
+		if (currentVertex==deleteVertex) {
 
 			// 図形が閉じている場合
 			if (isVertexCoordinate(vertex_head, vertex_tail)) {
@@ -144,11 +148,32 @@ bool CShape::freeVertex(CVertex* deleteVertex) {
 }
 
 bool CShape::InsertVertex(CVertex* newVertex, CVertex* preVertex) {
-	newVertex->SetNextVertex(preVertex->GetNextVertex());
-	preVertex->SetNextVertex(newVertex);
+	if (!newVertex) return false;
 
-	newVertex->GetNextVertex()->SetPreVertex(newVertex);
-	newVertex->SetPreVertex(preVertex);
+	if (!preVertex) {
+		newVertex->SetNextVertex(this->vertex_head);
+		newVertex->SetPreVertex(nullptr);
+
+		if (this->vertex_head) {
+			this->vertex_head->SetPreVertex(newVertex);
+		}
+		else {
+			// 頂点が1つもない状態から追加した場合は、Tailにもなる
+			this->vertex_tail = newVertex;
+		}
+		this->vertex_head = newVertex;
+	}
+	else {
+		newVertex->SetNextVertex(preVertex->GetNextVertex());
+		newVertex->SetPreVertex(preVertex);
+
+		preVertex->SetNextVertex(newVertex);
+
+		if (newVertex->GetNextVertex()) newVertex->GetNextVertex()->SetPreVertex(newVertex);
+		else this->vertex_tail = newVertex;
+	}
+
+	vertex_count++;
 	return true;
 }
 
@@ -281,7 +306,7 @@ bool CShape::isVertexCoordinate(CVertex* v1, CVertex* v2) {
 	// アドレスが一致しているか
 	if (v1 == v2) return true;
 
-	// 座標が一致しているか
+	//// 座標が一致しているか
 	if (v1->GetX() == v2->GetX() && v1->GetY() == v2->GetY())
 		return true;
 

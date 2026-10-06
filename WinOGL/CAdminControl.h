@@ -136,6 +136,17 @@ public:
 	/// </summary>
 	void InsertVertex();
 
+	/// <summary>
+	/// 頂点を削除する
+	/// </summary>
+	/// <param name="DeleteV">削除する頂点</param>
+	bool freeVertex(CVertex* DeleteV);
+
+	/// <summary>
+	/// 選択された頂点を削除する
+	/// </summary>
+	void DeleteVertex();
+
 #pragma endregion
 
 #pragma region 選択

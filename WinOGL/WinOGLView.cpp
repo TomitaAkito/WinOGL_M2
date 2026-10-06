@@ -38,6 +38,7 @@ ON_UPDATE_COMMAND_UI(ID_AXIS, &CWinOGLView::OnUpdateAxis)
 ON_COMMAND(ID_EDIT, &CWinOGLView::OnEdit)
 ON_UPDATE_COMMAND_UI(ID_EDIT, &CWinOGLView::OnUpdateEdit)
 ON_WM_LBUTTONUP()
+ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -258,4 +259,11 @@ void CWinOGLView::OnLButtonUp(UINT nFlags, CPoint point) {
 	LButtonDownFlag = false;
 
 	CView::OnLButtonUp(nFlags, point);
+}
+
+void CWinOGLView::OnRButtonDown(UINT nFlags, CPoint point) {
+	if(AC.EditFlag)	AC.DeleteVertex();
+
+	RedrawWindow();
+	CView::OnRButtonDown(nFlags, point);
 }

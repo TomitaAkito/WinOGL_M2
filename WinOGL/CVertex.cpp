@@ -15,6 +15,14 @@ CVertex::CVertex(float mouse_x, float mouse_y) {
 	pre = NULL;
 }
 
+CVertex::CVertex(CVertex* cpVertex) {
+	x = cpVertex->GetX();
+	y = cpVertex->GetY();
+
+	next = cpVertex->GetNextVertex();
+	pre = cpVertex->GetPreVertex();
+}
+
 CVertex::~CVertex() {
 }
 

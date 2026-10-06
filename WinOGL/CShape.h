@@ -37,6 +37,13 @@ public:
 	/// </summary>
 	/// <param name="preShape">ポインタ</param>
 	void SetPreShape(CShape* preShape);
+
+	/// <summary>
+	/// close_flagをflagを設定する
+	/// </summary>
+	/// <param name="flag">[bool]Flag</param>
+	void SetCloseFlag(bool flag);
+
 #pragma endregion
 
 #pragma region Get
@@ -99,7 +106,7 @@ public:
 	/// 頂点をpreVertexの次に挿入する
 	/// </summary>
 	/// <param name="newVertex">新しい頂点</param>
-	/// <param name="preVertex">挿入する頂点の前の座標</param>
+	/// <param name="preVertex">挿入する頂点の前の頂点</param>
 	/// <returns>[True]終了 [False]失敗</returns>
 	bool InsertVertex(CVertex* newVertex, CVertex* preVertex);
 
@@ -146,7 +153,7 @@ public:
 	/// <param name="v2">頂点2</param>
 	/// <returns>[True]一致　[False]不一致</returns>
 	bool isVertexCoordinate(CVertex* v1, CVertex* v2);
-
+	
 #pragma endregion
 };
 

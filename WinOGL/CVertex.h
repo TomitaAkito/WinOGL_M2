@@ -25,6 +25,12 @@ public:
 	CVertex(float mouse_x, float mouse_y);
 
 	/// <summary>
+	/// コンストラクタ(引数)
+	/// </summary>
+	/// <param name="cpVertex">コピー前の頂点</param>
+	CVertex(CVertex* cpVertex);
+
+	/// <summary>
 	/// デストラクタ
 	/// </summary>
 	~CVertex();
