@@ -268,39 +268,59 @@ bool CAdminControl::freeVertex(CVertex* DeleteV) {
 
 void CAdminControl::DeleteVertex() {
 	// 例外処理
-	if (!selectVertex) return;
+	if(!selectVertex) return;
 	CShape* selectS = isVertexInShape(selectVertex);
-	if (selectS->GetCloseFlag() && selectS->GetVertex_count() <= 4) return;
+	if(!shape_tail) return;
+	if(selectS->GetCloseFlag() && selectS->GetVertex_count() == 4) {
+		EditReset();
+		return;
+	}
 
 	// 無理だった時用
 	CVertex* originV = new CVertex(selectVertex);
 	CVertex* originalV_Pre = selectVertex->GetPreVertex();
+	CVertex* originalV_Next = selectVertex->GetNextVertex();
 
 	// 頂点がvertex_headを選択しているか
 	bool headTailFlag = false;
-	if (selectS->GetCloseFlag() && selectS->isVertexCoordinate(selectS->GetVertexHead(), selectVertex))
+	if(selectS->GetCloseFlag() && selectS->isVertexCoordinate(selectS->GetVertexHead(), selectVertex)) 
 		headTailFlag = true;
 	
+	// 選択している場合はpreを移動
+	if(headTailFlag) originalV_Pre = selectS->GetVertexTail()->GetPreVertex();
+
 	// 問題判定用フラグ
 	bool ErrFlag = false;
 
-	// 削除
+	// 一旦削除を実行
 	freeVertex(selectVertex);
 
-	// 交差判定
-
-
-	// 内包判定
-
-
-	// 問題があった場合戻す
-	if (ErrFlag) {
-		selectS->InsertVertex(originV, originalV_Pre);
-		if (headTailFlag)selectS->GetVertexTail()->SetVertex(selectS->GetVertexHead()->GetX(), selectS->GetVertexHead()->GetY());
-
+	// 図形がないなら終了
+	if(!shape_tail || shape_tail->GetVertex_count() <= 1) {
+		delete originV;
+		EditReset();
+		return;
 	}
-	EditReset();
 
+
+	// 交差判定
+	ErrFlag = selectS->IsSelfCrossingByDelete(originalV_Pre, originalV_Next, shape_head);
+
+	 //内包判定
+	if(!ErrFlag) ErrFlag = isContainsShapeByMoving();
+
+	// --- 問題があった場合、元の状態に戻す ---
+	if(ErrFlag) {
+		selectS->InsertVertex(originV, originalV_Pre);
+		if(headTailFlag) {
+			selectS->GetVertexTail()->SetVertex(selectS->GetVertexHead()->GetX(), selectS->GetVertexHead()->GetY());
+		}
+	} else {
+		// 問題なく削除成功した場合は復元用データを破棄
+		delete originV;
+	}
+
+	EditReset();
 }
 
 bool CAdminControl::Select() {

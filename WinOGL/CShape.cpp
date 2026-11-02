@@ -299,6 +299,31 @@ bool CShape::IsCrossing2Lines(CVertex* As, CVertex* Ae, CVertex* Bs, CVertex* Be
 	return false;
 }
 
+bool CShape::IsSelfCrossingByDelete(CVertex* preV, CVertex* nextV, CShape* shape_head) {
+	// 例外処理
+	if(!preV || !nextV) return false;
+
+	for(CShape* currentS = shape_head; currentS != NULL; currentS = currentS->GetNextShape()) {
+
+		for(CVertex* currentV = currentS->GetVertexHead(); currentV != NULL; currentV = currentV->GetNextVertex()) {
+
+			CVertex* currentNextV = currentV->GetNextVertex();
+			if(!currentNextV) break;
+
+			// 新しい線分（preV -> nextV）と判定対象の線分（currentV -> currentNextV）が隣り合う線分か
+			bool isSharedNode = (
+				isVertexCoordinate(preV, currentV) ||
+				isVertexCoordinate(preV, currentNextV) ||
+				isVertexCoordinate(nextV, currentV) ||
+				isVertexCoordinate(nextV, currentNextV));
+
+			// 頂点を共有していない独立した線分同士が交差していれば true
+			if(!isSharedNode && IsCrossing2Lines(currentV, currentNextV, preV, nextV)) return true;
+		}
+	}
+	return false;
+}
+
 bool CShape::isVertexCoordinate(CVertex* v1, CVertex* v2) {
 
 	// アドレスが一致しているか

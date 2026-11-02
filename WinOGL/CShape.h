@@ -144,6 +144,15 @@ public:
 	/// <param name="Be">線分Bの終点</param>
 	/// <returns>[True]交差する　[False]交差しない</returns>
 	bool IsCrossing2Lines(CVertex* As, CVertex* Ae, CVertex* Bs, CVertex* Be);
+
+	/// <summary>
+	/// 削除した際に交差するか判定する
+	/// </summary>
+	/// <param name="preV">前の座標</param>
+	/// <param name="nextV">次の座標</param>
+	/// <param name="shape_head">shape_head</param>
+	/// <returns>[True]自交差する　[False]自交差しない</returns>
+	bool IsSelfCrossingByDelete(CVertex* preV, CVertex* nextV, CShape* shape_head);
 	
 
 	/// <summary>
