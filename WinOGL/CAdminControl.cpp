@@ -152,6 +152,9 @@ void CAdminControl::AddVertex(float mouse_x, float mouse_y) {
 		shape_tail = newShape;
 	}
 
+	// 重なる場合は終了
+	if(isOverlapVertex(newVertex)) return;
+
 	// 自交差判定込みでshape_tailにくっつける
 	if (!shape_tail->AddVertex(newVertex)) return;
 		
@@ -609,6 +612,15 @@ bool CAdminControl::isInternalDivision(CVertex* vertex, CVertex* lineStartVertex
 
 	// t=0なら始点，t=1なら終点，0<t<1なら内分点となる
 	if (0.0f <= t && t <= 1.0f) return true;
+	return false;
+}
+
+bool CAdminControl::isOverlapVertex(CVertex* new_vertex) {
+	for(CShape* currentS = shape_head;currentS != NULL;currentS = currentS->GetNextShape()) {
+		for(CVertex* currentV = currentS->GetVertexHead();currentV != NULL;currentV = currentV->GetNextVertex()) {
+			if(currentS->isVertexCoordinate(currentV, new_vertex))return true;
+		}
+	}
 	return false;
 }
 

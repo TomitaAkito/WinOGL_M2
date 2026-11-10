@@ -267,6 +267,13 @@ public:
 	/// <param name="lineStartVertex">線の始点</param>
 	/// <returns>[True]内分点　[False]外分点</returns>
 	bool isInternalDivision(CVertex* vertex, CVertex* lineStartVertex);
+	
+	/// <summary>
+	/// 頂点が重ならないかを判定する
+	/// </summary>
+	/// <param name="new_vertex">新しい頂点</param>
+	/// <returns>[True]重なる [False]重ならない</returns>
+	bool isOverlapVertex(CVertex* new_vertex);
 
 #pragma endregion
 
