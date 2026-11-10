@@ -1,6 +1,11 @@
 #include "pch.h"
 #include "CShape.h"
 
+#ifdef DEBUG
+#define THIS_FILE __FILE__
+#define new DEBUG_NEW
+#endif // DEBUG
+
 CShape::CShape() {
 	vertex_head = NULL;
 	vertex_tail = NULL;
@@ -13,6 +18,7 @@ CShape::CShape() {
 
 
 CShape::~CShape() {
+	forceDelereVertexAry();
 }
 
 void CShape::SetNextShape(CShape* nextShape) {
@@ -199,6 +205,20 @@ void CShape::appentVertex(CVertex* vertex) {
 	vertex_count++;
 	return;
 
+}
+
+void CShape::forceDelereVertexAry() {
+	CVertex* nextV;
+
+	for(CVertex* currentV = vertex_head;currentV != NULL;currentV = nextV) {
+		nextV = currentV->GetNextVertex();
+		delete currentV;
+	}
+
+	vertex_head = NULL;
+	vertex_tail = NULL;
+	vertex_count = 0;
+	close_flag = false;
 }
 
 bool CShape::IsSelfCrossing(CVertex* newVertex) {

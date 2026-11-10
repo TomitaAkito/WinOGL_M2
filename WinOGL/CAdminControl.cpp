@@ -1,6 +1,12 @@
 #include "pch.h"
 #include "CAdminControl.h"
 
+#ifdef DEBUG
+#define THIS_FILE __FILE__
+#define new DEBUG_NEW
+#endif // DEBUG
+
+
 
 CAdminControl::CAdminControl() {
 	shape_head = NULL;
@@ -20,6 +26,8 @@ CAdminControl::CAdminControl() {
 
 
 CAdminControl::~CAdminControl() {
+	delete mouseVertex;
+	delete pre_mouseVertex;
 }
 
 void CAdminControl::Draw() {

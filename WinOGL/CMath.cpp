@@ -3,6 +3,11 @@
 #include "CShape.h"
 #include "CVertex.h"
 
+#ifdef DEBUG
+#define THIS_FILE __FILE__
+#define new DEBUG_NEW
+#endif // DEBUG
+
 float CMath::GetPie() {
     return 3.14;
 }

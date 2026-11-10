@@ -116,6 +116,11 @@ public:
 	/// <param name="vertex">頂点情報</param>
 	void appentVertex(CVertex* vertex);
 
+	/// <summary>
+	/// 図形を破壊する際に頂点のリストを全て削除する
+	/// </summary>
+	void forceDelereVertexAry();
+
 #pragma endregion
 
 #pragma region 判定
