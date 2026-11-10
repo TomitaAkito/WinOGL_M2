@@ -110,6 +110,12 @@ public:
 	/// <returns>[True]終了 [False]失敗</returns>
 	bool InsertVertex(CVertex* newVertex, CVertex* preVertex);
 
+	/// <summary>
+	/// 無条件で座標を加える
+	/// </summary>
+	/// <param name="vertex">頂点情報</param>
+	void appentVertex(CVertex* vertex);
+
 #pragma endregion
 
 #pragma region 判定

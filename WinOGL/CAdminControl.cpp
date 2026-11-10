@@ -6,6 +6,7 @@ CAdminControl::CAdminControl() {
 	shape_head = NULL;
 	shape_tail = NULL;
 	mouseVertex = new CVertex();
+	pre_mouseVertex = new CVertex();
 	POINTSIZE = 10;
 	LINEWIDTH = 2.0;
 	AxisFlag = false;
@@ -166,6 +167,9 @@ void CAdminControl::Edit(float mouse_x, float mouse_y) {
 	// マウス座標を格納
 	SetMouseVertex(mouse_x, mouse_y);
 	
+	// マウス座標をpreに格納
+	pre_mouseVertex->SetVertex(mouse_x, mouse_y);
+
 	// 図形・点・線の選択
 	Select();
 
@@ -186,6 +190,8 @@ void CAdminControl::Move(float mouse_x, float mouse_y) {
 	if (selectCount < 2) return;
 
 	if (selectVertex)MoveVertex(mouse_x, mouse_y);
+
+	if(selectShape)MoveShape(mouse_x, mouse_y);
 }
 
 void CAdminControl::MoveVertex(float mouse_x, float mouse_y) {
@@ -210,6 +216,50 @@ void CAdminControl::MoveVertex(float mouse_x, float mouse_y) {
 		if (selectS->isVertexCoordinate(selectVertex, selectS->GetVertexHead()))
 			selectS->GetVertexTail()->SetVertex(beforeX, beforeY);
 	}	
+}
+
+void CAdminControl::MoveShape(float mouse_x, float mouse_y) {
+	// 例外処理
+	if(!selectShape) return;
+
+	// マウス座標から移動量をベクトルとして算出する
+	CVector* momentum = new CVector(pre_mouseVertex, mouseVertex);
+
+	// 図形をコピーする
+	CShape* cpShape = new CShape();
+	copyShape(selectShape, cpShape);
+
+	// 一旦全部移動させる
+	MoveShapeByMomentum(selectShape, momentum);
+	
+	// 判定
+	bool ErrFlag = isContainsShapeByMoving();
+	if(!ErrFlag)ErrFlag = isOtherCrossingByMoving();
+
+	// どこかの頂点が内包する場合は元に戻す
+	if(ErrFlag) MoveShapeByShape(selectShape, cpShape);
+	else pre_mouseVertex->SetVertex(mouseVertex);
+
+	// 削除
+	delete momentum;
+	delete cpShape;
+}
+
+void CAdminControl::MoveShapeByMomentum(CShape* shape, CVector* momentum) {
+	for(CVertex* currentVertex = shape->GetVertexHead();currentVertex != NULL;currentVertex = currentVertex->GetNextVertex()) {
+		currentVertex->SetVertex(currentVertex->GetX() + momentum->GetX(), currentVertex->GetY() + momentum->GetY());
+	}
+}
+
+void CAdminControl::MoveShapeByShape(CShape* shape, CShape* afterShape) {
+	// 例外処理
+	if(!shape || !afterShape)return;
+	if(shape->GetVertex_count() != afterShape->GetVertex_count())return;
+
+	CVertex* afV = afterShape->GetVertexHead();
+	for(CVertex* currentV = shape->GetVertexHead();currentV != NULL;currentV = currentV->GetNextVertex(), afV = afV->GetNextVertex()) {
+		currentV->SetVertex(afV);
+	}
 }
 
 void CAdminControl::InsertVertex() {
@@ -440,6 +490,29 @@ bool CAdminControl::isOtherCrossing(CVertex* newVertex) {
 	return false;
 }
 
+bool CAdminControl::isOtherCrossingByMoving() {
+	// 例外処理
+	if(!selectShape) return false;
+
+	// 移動中の図形の各線分（v1-v2）を取得
+	for(CVertex* v1 = selectShape->GetVertexHead(); v1 != NULL && v1->GetNextVertex() != NULL; v1 = v1->GetNextVertex()) {
+		CVertex* v2 = v1->GetNextVertex();
+
+		for(CShape* otherShape = shape_head; otherShape != NULL; otherShape = otherShape->GetNextShape()) {
+			if(otherShape == selectShape) continue;
+
+			// 他の図形の各線分（otherV1-otherV2）を取得
+			for(CVertex* otherV1 = otherShape->GetVertexHead(); otherV1 != NULL && otherV1->GetNextVertex() != NULL; otherV1 = otherV1->GetNextVertex()) {
+				CVertex* otherV2 = otherV1->GetNextVertex();
+
+				// 2本の線分が交差しているか判定
+				if(otherShape->IsCrossing2Lines(v1, v2, otherV1, otherV2)) return true;
+			}
+		}
+	}
+	return false;
+}
+
 CShape* CAdminControl::isVertexInShape(CVertex* vertex) {
 
 	for (CShape* currentShape = shape_head; currentShape != NULL; currentShape = currentShape->GetNextShape()) {
@@ -487,11 +560,7 @@ bool CAdminControl::isContainsShape() {
 
 bool CAdminControl::isContainsShapeByMoving() {
 
-	CShape* selectS = isVertexInShape(selectVertex);
-
 	for (CShape* currentShape = shape_head;currentShape != NULL;currentShape = currentShape->GetNextShape()) {
-		//if (currentShape == selectS) continue;
-
 		for (CVertex* currentVertex = currentShape->GetVertexHead();currentVertex != NULL;currentVertex = currentVertex->GetNextVertex()) {
 			for (CShape* searchShape = shape_head;searchShape != NULL;searchShape = searchShape->GetNextShape()) {
 				if (currentShape == searchShape)continue;
@@ -541,6 +610,15 @@ bool CAdminControl::isInternalDivision(CVertex* vertex, CVertex* lineStartVertex
 	// t=0なら始点，t=1なら終点，0<t<1なら内分点となる
 	if (0.0f <= t && t <= 1.0f) return true;
 	return false;
+}
+
+void CAdminControl::copyShape(CShape* baseShape, CShape* cpShape) {
+	// 例外処理
+	if(!baseShape || !cpShape) return;
+
+	for(CVertex* currentVertex = baseShape->GetVertexHead();currentVertex != NULL;currentVertex = currentVertex->GetNextVertex()) {
+		cpShape->appentVertex(currentVertex);
+	}
 }
 
 void CAdminControl::DrawSizeChange(int mode) {

@@ -11,13 +11,14 @@ private:
 	CShape* shape_head;			// 図形リストの最初
 	CShape* shape_tail;			// 図形リストの最後
 	CVertex* mouseVertex;		// マウス座標
+	CVertex* pre_mouseVertex;	// 1つ前のマウス座標
 	float POINTSIZE;			// 点のサイズ
 	float LINEWIDTH;			// 線の太さ
 	CVertex* selectVertex;		// 選択された頂点
 	CVertex* selectLineStart;	// 選択された線の始点
 	CShape* selectShape;		// 選択された図形
 	float SELECT_THRESHOLD;		// 選択する際の距離の閾値 
-	int selectCount;
+	int selectCount;			// 選択した回数をカウントするフラグ
 public:
 	bool AxisFlag;				// 座標軸フラグ
 	bool EditFlag;				// 編集フラグ
@@ -132,6 +133,27 @@ public:
 	void MoveVertex(float mouse_x, float mouse_y);
 
 	/// <summary>
+	/// 選択された形状を移動させる
+	/// </summary>
+	/// <param name="mouse_x">マウス：x座標</param>
+	/// <param name="mouse_y">マウス：y座標</param>
+	void MoveShape(float mouse_x, float mouse_y);
+
+	/// <summary>
+	/// 移動量に基づき，図形を動かす
+	/// </summary>
+	/// <param name="shape">移動させる図形</param>
+	/// <param name="momentum">移動量(ベクトル)</param>
+	void MoveShapeByMomentum(CShape* shape, CVector* momentum);
+
+	/// <summary>
+	/// shapeをafterShapeへ移動させる
+	/// </summary>
+	/// <param name="shape">移動させる図形</param>
+	/// <param name="afterShape">移動先の図形</param>
+	void MoveShapeByShape(CShape* shape, CShape* afterShape);
+
+	/// <summary>
 	/// 選択された線に頂点を挿入する
 	/// </summary>
 	void InsertVertex();
@@ -192,6 +214,12 @@ public:
 	bool isOtherCrossing(CVertex* newVertex);
 
 	/// <summary>
+	/// 移動時に他の図形と交差していないかを判定する
+	/// </summary>
+	/// <returns>[true]交差している　[false]交差していない</returns>
+	bool isOtherCrossingByMoving();
+
+	/// <summary>
 	/// 頂点が格納されている図形を返す
 	/// </summary>
 	/// <param name="vertex">頂点</param>
@@ -244,11 +272,18 @@ public:
 
 #pragma region その他
 public:
+	
+	/// <summary>
+	/// 図形をコピーする
+	/// </summary>
+	/// <param name="baseShape">コピー前の図形</param>
+	/// <param name="cpShape">コピー後の図形</param>
+	void copyShape(CShape* baseShape, CShape* cpShape);
 
 	/// <summary>
-	/// 点・線を太くする
+	/// 点・線の大きさ・太さを変更する
 	/// </summary>
-	/// <param name="mode">[正]太くする [負]補足する</param>
+	/// <param name="mode">[正]太くする [負]細くする</param>
 	void DrawSizeChange(int mode);
 
 #pragma endregion

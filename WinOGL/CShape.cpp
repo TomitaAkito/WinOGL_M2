@@ -175,6 +175,32 @@ bool CShape::InsertVertex(CVertex* newVertex, CVertex* preVertex) {
 	return true;
 }
 
+void CShape::appentVertex(CVertex* vertex) {
+	CVertex* newVertex = new CVertex(vertex);
+	// 頂点がない場合
+	if(!vertex_head) {
+		vertex_head = newVertex;
+		vertex_tail = newVertex;
+		vertex_count++;
+		return;
+	}
+
+	// 図形がある場合
+	CMath calc;
+	// もし形状を閉じるのであれば
+	if(vertex_count >= 3 && calc.distanceVertex2Vertex(newVertex, vertex_head) < close_dis) {
+		newVertex->SetVertex(vertex_head);
+		close_flag = true;
+	}
+	
+	vertex_tail->SetNextVertex(newVertex);
+	newVertex->SetPreVertex(vertex_tail);
+	vertex_tail = newVertex;
+	vertex_count++;
+	return;
+
+}
+
 bool CShape::IsSelfCrossing(CVertex* newVertex) {
 	// 例外処理
 	if (vertex_count < 3) return false;
